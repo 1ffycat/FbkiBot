@@ -3,6 +3,8 @@ using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -11,10 +13,12 @@ var builder = Host.CreateApplicationBuilder(args);
 // Парсим настройки
 builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
 builder.Services.Configure<TextConstSettings>(builder.Configuration.GetSection("TextConsts"));
-builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("Database"));
 
 // Добавляем БД в DI контейнер
-builder.Services.AddDbContext<BotDbContext>();
+builder.Services.AddDbContext<BotDbContext>(conf =>
+{
+    conf.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
+});
 
 // Добавляем сервисы в DI контейнер
 builder.Services.AddSingleton<IBotService, TelegramBotService>();
