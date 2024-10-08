@@ -21,4 +21,18 @@ public static class ApplicationBuilderExtensions
 
         return app;
     }
+
+    /// <summary>
+    /// Добавить настройки для парсинга
+    /// </summary>
+    /// <typeparam name="T">Тип модели настроек</typeparam>
+    /// <param name="app">Билдер приложения, в которое нужно добавить настройки</param>
+    /// <param name="name">Название секции настроек</param>
+    /// <returns>Билдер приложения с добавленными настройками</returns>
+    public static IHostApplicationBuilder AddSettings<T>(this IHostApplicationBuilder app, string name) where T : class
+    {
+        app.Services.Configure<T>(app.Configuration.GetSection(name));
+
+        return app;
+    }
 }

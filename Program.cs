@@ -12,9 +12,9 @@ using Microsoft.Extensions.Hosting;
 var builder = Host.CreateApplicationBuilder(args);
 
 // Парсим настройки
-builder.Services.Configure<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
-builder.Services.Configure<TextConstSettings>(builder.Configuration.GetSection("TextConsts"));
-builder.Services.Configure<MessageSavingSettings>(builder.Configuration.GetSection("MessageSaving"));
+builder.AddSettings<TelegramSettings>("Telegram");
+builder.AddSettings<TextConstSettings>("TextConsts");
+builder.AddSettings<MessageSavingSettings>("Message saving");
 
 // Добавляем БД в DI контейнер
 builder.Services.AddDbContext<BotDbContext>(conf =>
