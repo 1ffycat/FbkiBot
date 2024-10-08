@@ -3,6 +3,7 @@ using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Services;
+using FbkiBot.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,8 +26,8 @@ builder.Services.AddSingleton<IBotService, TelegramBotService>();
 builder.Services.AddHostedService<BotHostedService>();
 
 // Добавляем команды в DI контейнер
-builder.Services.AddTransient<IChatCommand, StartCommand>();
-builder.Services.AddTransient<IChatCommand, HelpCommand>();
+builder.AddCommand<StartCommand>();
+builder.AddCommand<HelpCommand>();
 
 // Обходим круговую зависимость в HelpCommand. Костыли еще никогда не были так лаконичны
 builder.Services.AddTransient<Func<IEnumerable<IChatCommand>>>(sp =>
