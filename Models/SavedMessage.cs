@@ -1,3 +1,5 @@
+using Telegram.Bot.Types;
+
 namespace FbkiBot.Models;
 
 /// <summary>
@@ -16,9 +18,19 @@ public class SavedMessage
     public DateTime AddedAtUtc { get; set; }
 
     /// <summary>
-    /// ID пользователя, сохранившего сообщение
+    /// ID атвора
     /// </summary>
     public long AddedById { get; set; }
+
+    /// <summary>
+    /// Username автора
+    /// </summary>
+    public string? AddedByUsername { get; set; }
+
+    /// <summary>
+    /// Имя автора
+    /// </summary>
+    public string AddedByName { get; set; }
 
     /// <summary>
     /// ID чата, в котором сохранено сообщение
@@ -42,14 +54,18 @@ public class SavedMessage
     /// <param name="messageId">ID сохраняемого сообщения</param>
     /// <param name="chatId">ID чата, в котором сохраняем</param>
     /// <param name="addedById">ID пользователя который сохраняет сообщение</param>
-    public SavedMessage(string name, int messageId, long chatId, long addedById)
+    public SavedMessage(string name, int messageId, long chatId, long addedById, string? addedByUsername, string addedByName)
     {
         Name = name;
         MessageId = messageId;
         ChatId = chatId;
         AddedById = addedById;
+        AddedByUsername = addedByUsername;
+        AddedByName = addedByName;
 
         // Ставим дату сохранения на текущую по UTC
         AddedAtUtc = DateTime.UtcNow;
     }
+
+    public SavedMessage(string name, int messageId, long chatId, User author) : this(name, messageId, chatId, author.Id, author.Username, $"{author.FirstName} {author.LastName}") { }
 }

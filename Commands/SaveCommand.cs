@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
-[BotCommand("/save", "Сохраняет отмеченное сообщение в БД с заданным названием", "/save <name>")]
+[BotCommand("/save", "Сохраняет отмеченное сообщение в БД с заданным названием", "/save <название>")]
 public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
 {
     public bool CanExecute(Message message) => message.Text!.StartsWith("/save", StringComparison.OrdinalIgnoreCase);
@@ -36,13 +36,13 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger, IOptions<
         }
 
         // Если сообщение с таким названием уже существует
-        if (await db.FindSavedMessage(name, message.Chat.Id, cancellationToken) is SavedMessage existingMessage)
+        if (await db.FindSavedMessageAsync(name, message.Chat.Id, cancellationToken) is SavedMessage existingMessage)
         {
             await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.SaveNameTakenMessage, replyToMessageId: existingMessage.MessageId, cancellationToken: cancellationToken);
             return;
         }
 
-        var saveMessage = new SavedMessage(name, replyMsg.MessageId, message.Chat.Id, message.From.Id);
+        var saveMessage = new SavedMessage(name, replyMsg.MessageId, message.Chat.Id, message.From);
 
         logger.LogDebug("Saving message to db...");
 

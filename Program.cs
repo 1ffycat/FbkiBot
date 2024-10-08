@@ -32,6 +32,7 @@ builder.AddCommand<HelpCommand>();
 builder.AddCommand<SaveCommand>();
 builder.AddCommand<CatCommand>();
 builder.AddCommand<RmCommand>();
+builder.AddCommand<LsCommand>();
 
 // Обходим круговую зависимость в HelpCommand. Костыли еще никогда не были так лаконичны
 builder.Services.AddTransient<Func<IEnumerable<IChatCommand>>>(sp =>

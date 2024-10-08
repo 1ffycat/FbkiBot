@@ -49,4 +49,9 @@ public class TextConstSettings
     /// Сообщение, которое отправляется когда сохраненное сообщение было успешно удалено
     /// </summary>
     public required string RmSuccess { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется при успешном выполнении команды /ls
+    /// </summary>
+    public required string LsSuccess { get; set; }
 }

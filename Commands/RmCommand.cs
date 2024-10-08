@@ -27,7 +27,7 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, IOptions<Te
             return;
         }
 
-        var messageFound = await db.FindSavedMessage(name, message.Chat.Id, cancellationToken: cancellationToken);
+        var messageFound = await db.FindSavedMessageAsync(name, message.Chat.Id, cancellationToken: cancellationToken);
 
         // Если сообщение с таким названием не найдено
         if (messageFound is null)

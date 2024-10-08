@@ -13,7 +13,7 @@ public class BotDbContext : DbContext
     /// </summary>
     public DbSet<SavedMessage> SavedMessages { get; set; }
 
-    public async Task<SavedMessage?> FindSavedMessage(string name, long chatId, CancellationToken cancellationToken) => await SavedMessages.SingleOrDefaultAsync(msg => msg.ChatId == chatId && EF.Functions.Like(msg.Name, name), cancellationToken: cancellationToken);
+    public async Task<SavedMessage?> FindSavedMessageAsync(string name, long chatId, CancellationToken cancellationToken) => await SavedMessages.SingleOrDefaultAsync(msg => msg.ChatId == chatId && EF.Functions.Like(msg.Name, name), cancellationToken: cancellationToken);
 
     /// <summary>
     /// Действия при создании БД

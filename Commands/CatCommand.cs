@@ -28,7 +28,7 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
         }
 
         // Ищем сообщение по ID чата и названию
-        var messageFound = await db.FindSavedMessage(arg, message.Chat.Id, cancellationToken);
+        var messageFound = await db.FindSavedMessageAsync(arg, message.Chat.Id, cancellationToken);
 
         // Если такого сообщения не найдено
         if (messageFound is null)
