@@ -5,6 +5,7 @@
 
 # Sqlite databases
 *.db
+*.db-*
 
 # dotenv files
 .env
