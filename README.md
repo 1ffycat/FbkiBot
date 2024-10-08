@@ -1,7 +1,7 @@
 # Бот для сохранения сообщений группы 14221 ФБКИ ИГУ
 
 ## Почему так много текста / душно
-![Душно](https://media1.tenor.com/m/NWLPJDL88rMAAAAC/%D0%B4%D1%83%D1%88%D0%BD%D0%BE-%D1%84%D0%BE%D1%80%D1%82%D0%BE%D1%87%D0%BA%D0%B0.gif)
+![Душно](https://media1.tenor.com/m/efTuGQciB3cAAAAC/%D0%B4%D1%83%D1%88%D0%BD%D0%BE-%D0%B4%D1%83%D1%85%D0%BE%D1%82%D0%B0.gif)
 1. Вдохнули.
 2. Выдохнули.
 3. Читаем дальше
