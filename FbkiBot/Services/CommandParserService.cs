@@ -22,6 +22,6 @@ public class CommandParserService
         // Если команда не начинается со / (обычное сообщение) - не разделяем на команду и аргументы
         if (!command.StartsWith('/')) return new(message, null, tokens);
         // Если слеш-команда - разделяем на команду и аргументы
-        else return new(message, command, [.. tokens[1..]]);
+        else return new(message, command, tokens[1..]);
     }
 }
