@@ -11,14 +11,14 @@ using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
-[BotCommand("/rmmount", "Удаляет mount", "/mount <название>")]
-public class RmMountCommand(BotDbContext db, ILogger<RmMountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
+[BotCommand("/umount", "Удаляет mount", "/umount")]
+public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
 {
-    public bool CanExecute(CommandContext context) => context.Command?.Equals("/rmmount", StringComparison.OrdinalIgnoreCase) ?? false;
+    public bool CanExecute(CommandContext context) => context.Command?.Equals("/umount", StringComparison.OrdinalIgnoreCase) ?? false;
 
     public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Processing rmmount command");
+        logger.LogDebug("Processing umount command");
 
         // Если нет mount с этим чатом
         if (!db.UserMounts.Any(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id))
@@ -30,7 +30,7 @@ public class RmMountCommand(BotDbContext db, ILogger<RmMountCommand> logger, IOp
         db.UserMounts.Remove(await db.UserMounts.FirstAsync(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id));
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 
-        logger.LogDebug("/rmmount - success");
+        logger.LogDebug("/umount - success");
         await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccessMessage, cancellationToken: cancellationToken);
     }
 }
