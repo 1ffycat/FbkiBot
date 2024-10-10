@@ -4,9 +4,21 @@ on:
   pull_request:
     branches:
         - master
+    paths-ignore:
+      - '*.md'
+      - 'appsettings.json'
+      - 'appsettings.*.json'
+      - '.gitignore'
+      - '.github/workflows/*'
   push:
     branches:
         - master
+    paths-ignore:
+      - '*.md'
+      - 'appsettings.json'
+      - 'appsettings.*.json'
+      - '.gitignore'
+      - '.github/workflows/*'
 
 jobs:
   test:
