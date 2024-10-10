@@ -1,5 +1,4 @@
-﻿using FbkiBot;
-using FbkiBot.Commands;
+﻿using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Services;
