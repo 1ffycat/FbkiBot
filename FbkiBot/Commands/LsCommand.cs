@@ -30,6 +30,16 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         else
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken);
 
+        var mounts = await db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToListAsync();
+        //Ищем сообщения в примонтированых чатах
+        foreach (var mount in mounts)
+        {
+            if (context.Argument is null)
+                foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId).ToListAsync(cancellationToken: cancellationToken));
+            else
+                foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken));
+        }
+
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 
         var msgBuilder = new StringBuilder();
@@ -38,7 +48,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(msg.Name);
+            msgBuilder.Append(mounts.Count(mnt => mnt.ChatId == msg.ChatId)==0 ? msg.Name : $"{mounts.First(mnt => mnt.ChatId == msg.ChatId).Name}/{msg.Name}");
             msgBuilder.Append(" | [");
             msgBuilder.Append(msg.AddedByName);
             msgBuilder.Append("](tg://user?id=");
@@ -50,6 +60,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         logger.LogDebug("/ls - success");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccess}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccessMessage}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
     }
 }
