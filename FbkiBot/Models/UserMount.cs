@@ -10,7 +10,7 @@ public class UserMount
     /// <summary>
     /// ID в БД
     /// </summary>
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public int Id { get; set; }
 
     /// <summary>
     /// ID пользователя
@@ -24,7 +24,7 @@ public class UserMount
     public long ChatId { get; set; }
 
     /// <summary>
-    /// Название mount
+    /// Название монтирования
     /// </summary>
     public string Name { get; set; }
 
@@ -32,7 +32,7 @@ public class UserMount
     /// <summary>
     /// Создать модель сохраненного сообщения
     /// </summary>
-    /// <param name="name">Название mount</param>
+    /// <param name="name">Название монтирования</param>
     /// <param name="chatId">ID чата который примонтитровал пользователь</param>
     /// <param name="UserId">ID пользователя</param>
     public UserMount(string name, long chatId, long userId)

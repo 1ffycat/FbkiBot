@@ -24,7 +24,7 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
             return;
         }
 
-        // Если не задано название
+        // Если не задано название монтирования
         if (context.Argument is null)
         {
             logger.LogDebug("/mount denied - no context.Argument");
@@ -32,15 +32,15 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
             return;
         }
 
-        // Если mount с таким названием уже существует
+        // Если монтирование с таким названием уже существует
         if (await db.FindUserMountAsync(context.Argument, context.Message.From.Id, cancellationToken) is UserMount existingMount)
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountNameTakenMessage, cancellationToken: cancellationToken);
             return;
         }
 
-        // Если mount для этого чата уже существует
-        if (db.UserMounts.Count(mnt => mnt.UserId == context.Message.From.Id || mnt.ChatId == context.Message.Chat.Id) != 0)
+        // Если монтирование для этого чата уже существует
+        if (db.UserMounts.Count(mnt => mnt.UserId == context.Message.From.Id && mnt.ChatId == context.Message.Chat.Id) != 0)
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountIsExistsMessage, cancellationToken: cancellationToken);
             return;
