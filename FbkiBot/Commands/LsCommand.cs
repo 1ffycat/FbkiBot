@@ -38,10 +38,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
             .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, null))
             .ToListAsync(cancellationToken: cancellationToken);
 
-        // Получаем все монтирования пользователя
-        var mounts = await db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToListAsync();
-
-        logger.LogDebug("/ls - found {count} mounts", mounts.Count);
         var userSavedMessages = await db.SavedMessages.Join(
             db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
             msg => msg.ChatId,
