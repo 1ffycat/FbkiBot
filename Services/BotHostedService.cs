@@ -1,8 +1,7 @@
-using FbkiBot.Services;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace FbkiBot;
+namespace FbkiBot.Services;
 
 /// <summary>
 /// Hosted-сервис, держащий сервис чатбота
@@ -28,6 +27,7 @@ public class BotHostedService(IBotService botService, ILogger<BotHostedService> 
     public Task StopAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Bot is stopping...");
+
         return Task.CompletedTask;
     }
 }

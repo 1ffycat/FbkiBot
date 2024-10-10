@@ -1,5 +1,4 @@
-﻿using FbkiBot;
-using FbkiBot.Commands;
+﻿using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Services;
@@ -25,6 +24,7 @@ builder.Services.AddDbContext<BotDbContext>(conf =>
 // Добавляем сервисы в DI контейнер
 builder.Services.AddSingleton<IBotService, TelegramBotService>();
 builder.Services.AddHostedService<BotHostedService>();
+builder.Services.AddSingleton<CommandParserService>();
 
 // Добавляем команды в DI контейнер
 builder.AddCommand<StartCommand>();

@@ -12,42 +12,45 @@ namespace FbkiBot.Commands;
 [BotCommand("/cat", "Находит сохраненное сообщение по названию", "/cat <название>")]
 public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db, ILogger<CatCommand> logger) : IChatCommand
 {
-    public bool CanExecute(Message message) => message.Text!.StartsWith("/cat", StringComparison.OrdinalIgnoreCase);
+    public bool CanExecute(CommandContext context) => context.Command?.Equals("/cat", StringComparison.OrdinalIgnoreCase) ?? false;
 
-    public async Task ExecuteAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
         logger.LogDebug("Processing cat");
 
-        var arg = IChatCommand.GetArg(message);  // Получаем текст после команды
-
         // Если название искомого сообщение не задано
-        if (arg is null)
+        if (context.Argument is null)
         {
             logger.LogDebug("/cat denied - no name provided");
-            await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.SaveNoNameProvidedMessage, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.SaveNoNameProvidedMessage, cancellationToken: cancellationToken);
             return;
         }
         SavedMessage? messageFound;
-        string mountName = "";
-        if (arg.Any(x => x=='/'))
-            mountName = arg[..arg.IndexOf('/')];
 
-        if (await db.FindUserMountAsync(mountName, message.From!.Id, cancellationToken: cancellationToken) is UserMount mount)
-            messageFound = await db.FindSavedMessageAsync(arg[(arg.IndexOf('/')+1)..], mount.ChatId, cancellationToken);       
+        string mountName = "";
+
+        if (context.Argument.Any(x => x=='/'))
+            mountName = context.Argument[..context.Argument.IndexOf('/')];
+
+        // Ищем сообщение по ID чата и названию
+        var messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
+
+        if (await db.FindUserMountAsync(mountName, context.Message.From!.Id, cancellationToken: cancellationToken) is UserMount mount)
+            messageFound = await db.FindSavedMessageAsync(context.Argument[(arg.IndexOf('/')+1)..], mount.ChatId, cancellationToken);       
         else
             // Ищем сообщение по ID чата и названию
-            messageFound = await db.FindSavedMessageAsync(arg, message.Chat.Id, cancellationToken);
-
+            messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
 
         // Если такого сообщения не найдено
         if (messageFound is null)
         {
             logger.LogDebug("/cat denied - no message found by name");
-            await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.CatNotFoundMessage, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.CatNotFoundMessage, cancellationToken: cancellationToken);
             return;
         }
 
         logger.LogDebug("/cat - success");
-        await botClient.ForwardMessageAsync(message.Chat.Id, messageFound.ChatId, messageFound.MessageId, cancellationToken: cancellationToken);
+
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.CatFoundMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
     }
 }

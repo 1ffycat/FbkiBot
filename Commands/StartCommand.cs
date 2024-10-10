@@ -1,5 +1,6 @@
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
+using FbkiBot.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -10,11 +11,11 @@ namespace FbkiBot.Commands;
 [BotCommand("/start", "Выводит приветственное сообщение")]
 public class StartCommand(ILogger<StartCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
 {
-    public bool CanExecute(Message message) => string.Equals(message.Text, "/start", StringComparison.OrdinalIgnoreCase);
+    public bool CanExecute(CommandContext context) => context.Command?.Equals("/start", StringComparison.OrdinalIgnoreCase) ?? false;
 
-    public async Task ExecuteAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
         logger.LogDebug("Sending welcome message");
-        await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.WelcomeMessage, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.WelcomeMessage, cancellationToken: cancellationToken);
     }
 }

@@ -15,22 +15,22 @@ namespace FbkiBot.Commands;
 [BotCommand("/ls", "Показывает список сохраненных сообщений в категории", "/ls <категория>")]
 public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<TextConstSettings> textConsts) : IChatCommand
 {
-    public bool CanExecute(Message message) => message.Text!.StartsWith("/ls", StringComparison.OrdinalIgnoreCase);
+    public bool CanExecute(CommandContext context) => context.Command?.Equals("/ls", StringComparison.OrdinalIgnoreCase) ?? false;
 
-    public async Task ExecuteAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
         logger.LogDebug("Processing /ls");
 
-        var category = IChatCommand.GetArg(message);  // Получаем текст после команды
-
         List<SavedMessage> foundMessages;
-        if (category is null)
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == message.Chat.Id).ToListAsync(cancellationToken: cancellationToken);
+
+        // Если категория не дана - ищем во всех
+        if (context.Argument is null)
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id).ToListAsync(cancellationToken: cancellationToken);
         // Если категория дана - ищем по ней (чтобы начиналось с категории)
         else
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == message.Chat.Id && EF.Functions.Like(msg.Name, $"{category}%")).ToListAsync(cancellationToken: cancellationToken);
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{category}%")).ToListAsync(cancellationToken: cancellationToken);
 
-        var mounts = db.UserMounts.Where(mnt => mnt.UserId == message.Chat.Id).ToList();
+        var mounts = db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToList();
         // || mounts.Any(mnt => mnt.ChatId == msg.ChatId)
         // Если категория не дана - ищем во всех
         foreach (var mount in mounts)
@@ -64,6 +64,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         logger.LogDebug("/ls - success");
 
-        await botClient.SendTextMessageAsync(message.Chat.Id, $"{textConsts.Value.LsSuccess}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccess}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
     }
 }
