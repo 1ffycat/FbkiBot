@@ -48,7 +48,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(mounts.Count(mnt => mnt.ChatId == msg.ChatId)==0 ? msg.Name : $"{mounts.First(mnt => mnt.ChatId == msg.ChatId).Name}/{msg.Name}");
+            msgBuilder.Append(mounts.Count(mnt => mnt.ChatId == msg.ChatId) == 0 ? msg.Name : $"{mounts.First(mnt => mnt.ChatId == msg.ChatId).Name}/{msg.Name}");
             msgBuilder.Append(" | [");
             msgBuilder.Append(msg.AddedByName);
             msgBuilder.Append("](tg://user?id=");

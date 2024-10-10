@@ -37,7 +37,7 @@ public class UserMount
     /// <param name="UserId">ID пользователя</param>
     public UserMount(string name, long chatId, long userId)
     {
-        Name = name;     
+        Name = name;
         ChatId = chatId;
         UserId = userId;
     }

@@ -25,17 +25,17 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.SaveNoNameProvidedMessage, cancellationToken: cancellationToken);
             return;
         }
-        
+
         SavedMessage? messageFound;
         string mountName = "";
 
         // Получаем имя примантированого чата пользователя
-        if (context.Argument.Any(x => x=='/'))
+        if (context.Argument.Any(x => x == '/'))
             mountName = context.Argument[..context.Argument.IndexOf('/')];
 
         // Ищем сообщение по ID чата и названию
         if (await db.FindUserMountAsync(mountName, context.Message.From!.Id, cancellationToken: cancellationToken) is UserMount mount)
-            messageFound = await db.FindSavedMessageAsync(context.Argument[(context.Argument.IndexOf('/')+1)..], mount.ChatId, cancellationToken);       
+            messageFound = await db.FindSavedMessageAsync(context.Argument[(context.Argument.IndexOf('/') + 1)..], mount.ChatId, cancellationToken);
         else
             messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
 

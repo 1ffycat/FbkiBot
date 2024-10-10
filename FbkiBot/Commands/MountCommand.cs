@@ -40,7 +40,8 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
         }
 
         // Если mount для этого чата уже существует
-        if (db.UserMounts.Count(mnt => mnt.UserId == context.Message.From.Id || mnt.ChatId == context.Message.Chat.Id)!=0){
+        if (db.UserMounts.Count(mnt => mnt.UserId == context.Message.From.Id || mnt.ChatId == context.Message.Chat.Id) != 0)
+        {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountIsExistsMessage, cancellationToken: cancellationToken);
             return;
         }
