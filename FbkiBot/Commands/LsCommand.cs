@@ -27,19 +27,33 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         List<FoundMessages> foundMessages;
 
-        var userSavedMessages = await db.SavedMessages.Join(
-            db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
-            msg => msg.ChatId,
-            mnt => mnt.ChatId,
-            (msg, mnt) => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, mnt.Name))
-            .ToListAsync();
+        if(context.Message.Chat.Id == context.Message.From!.Id){   
+            var userSavedMessages = await db.SavedMessages.Join(
+                db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
+                msg => msg.ChatId,
+                mnt => mnt.ChatId,
+                (msg, mnt) => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, mnt.Name))
+                .ToListAsync();
 
-        // Если категория не дана - ищем во всех
-        if (context.Argument is null)
-            foundMessages = userSavedMessages;
-        // Если категория дана - ищем по ней (чтобы начиналось с категории)
-        else
-            foundMessages= userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")).ToList();
+            // Если категория не дана - ищем во всех
+            if (context.Argument is null)
+                foundMessages = userSavedMessages;
+            // Если категория дана - ищем по ней (чтобы начиналось с категории)
+            else
+                foundMessages = userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")).ToList();
+        }
+        else{
+            // Если категория не дана - ищем во всех
+            if (context.Argument is null)
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
+            .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, ""))
+            .ToListAsync(cancellationToken: cancellationToken);
+            // Если категория дана - ищем по ней (чтобы начиналось с категории)
+            else
+                foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
+                .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, ""))
+                .ToListAsync(cancellationToken: cancellationToken);
+        }
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 
