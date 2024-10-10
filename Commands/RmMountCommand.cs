@@ -12,26 +12,25 @@ using Telegram.Bot.Types;
 namespace FbkiBot.Commands;
 
 [BotCommand("/rmmount", "Удаляет mount", "/mount <название>")]
-public class RMMountCommand(BotDbContext db, ILogger<SaveCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
+public class RmMountCommand(BotDbContext db, ILogger<RmMountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
 {
-    public bool CanExecute(Message message) => message.Text!.StartsWith("/rmmount", StringComparison.OrdinalIgnoreCase);
+    public bool CanExecute(CommandContext context) => context.Command?.Equals("/rmmount", StringComparison.OrdinalIgnoreCase) ?? false;
 
-    public async Task ExecuteAsync(ITelegramBotClient botClient, Message message, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
-        logger.LogDebug("Processing mount command");
-        var name = IChatCommand.GetArg(message);  // Получаем текст после команды
+        logger.LogDebug("Processing rmmount command");
 
         // Если нет mount с этим чатом
-        if (!db.UserMounts.Any(mnt => mnt.UserId == message.From!.Id && mnt.ChatId == message.Chat.Id))
+        if (!db.UserMounts.Any(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id))
         {
-            await botClient.SendTextMessageAsync(message.Chat.Id, "mount с этим чатом нет", cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, "mount с этим чатом нет", cancellationToken: cancellationToken);
             return;
         }
 
-        db.UserMounts.Remove(await db.UserMounts.FirstAsync(mnt => mnt.UserId == message.From!.Id && mnt.ChatId == message.Chat.Id));
+        db.UserMounts.Remove(await db.UserMounts.FirstAsync(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id));
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 
         logger.LogDebug("/rmmount - success");
-        await botClient.SendTextMessageAsync(message.Chat.Id, "mount Успешно добавлен", cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, "mount удален", cancellationToken: cancellationToken);
     }
 }

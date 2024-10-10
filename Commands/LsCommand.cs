@@ -28,18 +28,18 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id).ToListAsync(cancellationToken: cancellationToken);
         // Если категория дана - ищем по ней (чтобы начиналось с категории)
         else
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{category}%")).ToListAsync(cancellationToken: cancellationToken);
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken);
 
-        var mounts = db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToList();
+        var mounts = await db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToListAsync();
         // || mounts.Any(mnt => mnt.ChatId == msg.ChatId)
         // Если категория не дана - ищем во всех
         foreach (var mount in mounts)
         {
-            if (category is null)
+            if (context.Argument is null)
                 foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId).ToListAsync(cancellationToken: cancellationToken));
             // Если категория дана - ищем по ней (чтобы начиналось с категории)
             else
-                foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId && EF.Functions.Like(msg.Name, $"{category}%")).ToListAsync(cancellationToken: cancellationToken));
+                foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken));
         }
 
 
@@ -51,8 +51,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(mounts.Any(mnt => mnt.ChatId != msg.ChatId) ? msg.Name : $"{mounts.Find(mnt => mnt.ChatId == msg.ChatId).Name}/{msg.Name}");
-            //msgBuilder.Append(msg.Name);
+            msgBuilder.Append(mounts.Count(mnt => mnt.ChatId == msg.ChatId)==0 ? msg.Name : $"{mounts.First(mnt => mnt.ChatId == msg.ChatId).Name}/{msg.Name}");
             msgBuilder.Append(" | [");
             msgBuilder.Append(msg.AddedByName);
             msgBuilder.Append("](tg://user?id=");
