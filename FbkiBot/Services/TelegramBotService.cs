@@ -1,3 +1,5 @@
+using System.Reflection;
+using FbkiBot.Attributes;
 using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,6 +27,9 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerab
     /// <param name="cancellationToken">Токен для остановки действий</param>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        // Объявляем Телеграму о всех доступных командах
+        await SetBotCommandsAsync(cancellationToken);
+
         var receiverOptions = new ReceiverOptions
         {
             AllowedUpdates = { }
@@ -37,6 +42,30 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerab
             cancellationToken
         );
         logger.LogInformation("Bot started receiving");
+    }
+
+    /// <summary>
+    /// Добавить все команды с атрибутом BotCommand в список команд бота в Telegram.
+    /// </summary>
+    /// <param name="cancellationToken">Токен для отмены</param>
+    /// <returns></returns>
+    private async Task SetBotCommandsAsync(CancellationToken cancellationToken)
+    {
+        logger.LogDebug("Evaluating all available commands and their descriptions");
+
+        var botCommands = commands.Select(c => c.GetType().GetCustomAttribute<BotCommandAttribute>())
+            .Where(c => c is not null)
+            .Select(c => new BotCommand()
+            {
+                Command = c!.Name,
+                Description = $"{c.Description} {(c.Usage is null ? "" : $"({c.Usage})")}"
+            }).ToArray();
+
+        logger.LogDebug("Found {commandCount} commands", botCommands.Length);
+
+        await _botClient.SetMyCommandsAsync(botCommands, cancellationToken: cancellationToken);
+
+        logger.LogInformation("Advertised {commandCount} available commands to Telegram", botCommands.Length);
     }
 
     /// <summary>
