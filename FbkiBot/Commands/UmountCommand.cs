@@ -27,6 +27,7 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOpti
             return;
         }
 
+        // Удаляем монтирование и сохраняем изменения в БД
         db.UserMounts.Remove(await db.UserMounts.FirstAsync(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id));
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 

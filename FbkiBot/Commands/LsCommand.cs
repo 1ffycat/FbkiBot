@@ -30,7 +30,11 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         else
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken);
 
+        // Получаем все монтирования пользователя
         var mounts = await db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToListAsync();
+
+        logger.LogDebug("/ls - found {count} mounts", mounts.Count);
+
         //Ищем сообщения в примонтированых чатах
         foreach (var mount in mounts)
         {
