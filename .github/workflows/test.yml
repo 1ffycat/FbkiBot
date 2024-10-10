@@ -25,7 +25,14 @@ jobs:
       run: dotnet restore
 
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build
 
     - name: Run tests
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --logger trx --results-directory "TestResults"
+
+    - name: Upload dotnet test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: dotnet-test-results
+        path: TestResults
+      if: ${{ always() }}
