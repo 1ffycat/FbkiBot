@@ -50,7 +50,6 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
 
         logger.LogDebug("/cat - success");
 
-        //await botClient.ForwardMessageAsync(context.Message.Chat.Id, messageFound.)
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.CatFoundMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
+        await botClient.ForwardMessageAsync(context.Message.Chat.Id, messageFound.ChatId, messageFound.MessageId, cancellationToken: cancellationToken);
     }
 }
