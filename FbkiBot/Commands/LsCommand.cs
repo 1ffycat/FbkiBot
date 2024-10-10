@@ -27,17 +27,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         List<FoundMessages> foundMessages;
 
-        // Если категория не дана - ищем во всех
-        if (context.Argument is null)
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
-            .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, null))
-            .ToListAsync(cancellationToken: cancellationToken);
-        // Если категория дана - ищем по ней (чтобы начиналось с категории)
-        else
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
-            .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, null))
-            .ToListAsync(cancellationToken: cancellationToken);
-
         var userSavedMessages = await db.SavedMessages.Join(
             db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
             msg => msg.ChatId,
@@ -45,11 +34,12 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
             (msg, mnt) => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, mnt.Name))
             .ToListAsync();
 
-        //Ищем сообщения в примонтированых чатах
+        // Если категория не дана - ищем во всех
         if (context.Argument is null)
-            foundMessages.AddRange(userSavedMessages);
+            foundMessages = userSavedMessages;
+        // Если категория дана - ищем по ней (чтобы начиналось с категории)
         else
-            foundMessages.AddRange(userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")));
+            foundMessages= userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")).ToList();
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 
@@ -59,7 +49,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(msg.MountName is null ? msg.MessageName : $"{msg.MountName}/{msg.MessageName}");
+            msgBuilder.Append(msg.MountName is "" ? msg.MessageName : $"{msg.MountName}/{msg.MessageName}");
             msgBuilder.Append(" | [");
             msgBuilder.Append(msg.AddedByName);
             msgBuilder.Append("](tg://user?id=");

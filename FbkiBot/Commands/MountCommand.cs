@@ -17,13 +17,6 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
     {
         logger.LogDebug("Processing mount command");
 
-        // Если это личный чат пользователя
-        if (context.Message.Chat.Id == context.Message.From!.Id)
-        {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountIsPersonalChatMessage, cancellationToken: cancellationToken);
-            return;
-        }
-
         // Если не задано название монтирования
         if (context.Argument is null)
         {
@@ -33,7 +26,7 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
         }
 
         // Если монтирование с таким названием уже существует
-        if (await db.FindUserMountAsync(context.Argument, context.Message.From.Id, cancellationToken) is UserMount existingMount)
+        if (await db.FindUserMountAsync(context.Argument, context.Message.From!.Id, cancellationToken) is UserMount existingMount)
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountNameTakenMessage, cancellationToken: cancellationToken);
             return;

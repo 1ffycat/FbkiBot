@@ -26,7 +26,7 @@ public class UserMount
     /// <summary>
     /// Название монтирования
     /// </summary>
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
 
     /// <summary>
