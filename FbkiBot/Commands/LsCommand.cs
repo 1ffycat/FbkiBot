@@ -43,9 +43,9 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         logger.LogDebug("/ls - found {count} mounts", mounts.Count);
         var userSavedMessages = await db.SavedMessages.Join(
-            db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id), 
-            msg => msg.ChatId, 
-            mnt => mnt.ChatId, 
+            db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
+            msg => msg.ChatId,
+            mnt => mnt.ChatId,
             (msg, mnt) => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, mnt.Name))
             .ToListAsync();
 
@@ -53,7 +53,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         if (context.Argument is null)
             foundMessages.AddRange(userSavedMessages);
         else
-            foundMessages.AddRange(userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")));           
+            foundMessages.AddRange(userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")));
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 

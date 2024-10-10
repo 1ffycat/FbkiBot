@@ -62,7 +62,7 @@ public class FoundMessages
     public FoundMessages(string messageName, int messageId, long chatId, long addedById, string? addedByUsername, string addedByName, DateTime addedAtUtc, string? mountName)
     {
         MountName = mountName;
-        MessageName= messageName;
+        MessageName = messageName;
         MessageId = messageId;
         ChatId = chatId;
         AddedById = addedById;
