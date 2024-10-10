@@ -15,7 +15,7 @@ namespace FbkiBot.Services;
 /// <param name="tgSettings">Специфичные для Telegram настройки (в т.ч. BotToken)</param>
 /// <param name="commands">Список всех включенных команд</param>
 /// <param name="logger">Логгер для внутреннего использования</param>
-public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerable<IChatCommand> commands, ILogger<TelegramBotService> logger) : IBotService
+public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerable<IChatCommand> commands, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IBotService
 {
     private readonly TelegramBotClient _botClient = new(tgSettings.Value.BotToken);
 
@@ -50,11 +50,14 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerab
         if (update.Message is not Message message || string.IsNullOrEmpty(update.Message.Text)) return;
         logger.LogDebug("Received message from {id}. Content: {text}", message.Chat.Id, message.Text);
 
+        // Парсим команду и аргументы из сообщения
+        var context = cmdParser.BuildContext(message);
+
         foreach (var command in commands)
         {
-            if (command.CanExecute(update.Message))
+            if (command.CanExecute(context))
             {
-                await command.ExecuteAsync(botClient, message, cancellationToken);
+                await command.ExecuteAsync(botClient, context, cancellationToken);
                 break;
             }
         }
