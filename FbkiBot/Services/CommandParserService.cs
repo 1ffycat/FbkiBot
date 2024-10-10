@@ -15,6 +15,9 @@ public class CommandParserService
     /// <returns></returns>
     public CommandContext BuildContext(Message message)
     {
+        // Если сообщение пустое - у нас нет ни команды ни аргументов
+        if (string.IsNullOrEmpty(message.Text)) return new(message, null, []);
+
         // Разбиваем сообщение на слова
         var tokens = message.Text?.Split(' ') ?? [];
         // Получаем команду
