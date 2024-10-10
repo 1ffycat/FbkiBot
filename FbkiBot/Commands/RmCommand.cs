@@ -43,12 +43,12 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, IOptions<Te
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmNotAuthorMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
         }
 
-        // Удаляем сообщение и сохраняем изменения в БД.
+        // Удаляем сообщение и сохраняем изменения в БД
         db.SavedMessages.Remove(messageFound);
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 
         logger.LogDebug("Saved message removed");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccess, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccessMessage, cancellationToken: cancellationToken);
     }
 }

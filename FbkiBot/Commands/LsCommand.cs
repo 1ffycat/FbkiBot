@@ -1,4 +1,7 @@
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
@@ -6,6 +9,7 @@ using FbkiBot.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -21,14 +25,37 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
     {
         logger.LogDebug("Processing /ls");
 
-        List<SavedMessage> foundMessages;
+        List<FoundMessages> foundMessages;
 
-        // Если категория не дана - ищем во всех
-        if (context.Argument is null)
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id).ToListAsync(cancellationToken: cancellationToken);
-        // Если категория дана - ищем по ней (чтобы начиналось с категории)
+        if (context.Message.Chat.Id == context.Message.From!.Id)
+        {
+            var userSavedMessages = await db.SavedMessages.Join(
+                db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
+                msg => msg.ChatId,
+                mnt => mnt.ChatId,
+                (msg, mnt) => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, mnt.Name))
+                .ToListAsync();
+
+            // Если категория не дана - ищем во всех
+            if (context.Argument is null)
+                foundMessages = userSavedMessages;
+            // Если категория дана - ищем по ней (чтобы начиналось с категории)
+            else
+                foundMessages = userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")).ToList();
+        }
         else
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken);
+        {
+            // Если категория не дана - ищем во всех
+            if (context.Argument is null)
+                foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
+                .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, ""))
+                .ToListAsync(cancellationToken: cancellationToken);
+            // Если категория дана - ищем по ней (чтобы начиналось с категории)
+            else
+                foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
+                .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, ""))
+                .ToListAsync(cancellationToken: cancellationToken);
+        }
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 
@@ -38,7 +65,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(msg.Name);
+            msgBuilder.Append(msg.MountName is "" ? msg.MessageName : $"{msg.MountName}/{msg.MessageName}");
             msgBuilder.Append(" | [");
             msgBuilder.Append(msg.AddedByName);
             msgBuilder.Append("](tg://user?id=");
@@ -50,6 +77,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         logger.LogDebug("/ls - success");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccess}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccessMessage}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
     }
 }

@@ -26,8 +26,18 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
             return;
         }
 
-        // Ищем сообщение по ID чата и названию
-        var messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
+        SavedMessage? messageFound;
+        string mountName = "";
+
+        // Получаем имя примонтированого чата пользователя
+        if (context.Argument.Any(x => x == '/'))
+            mountName = context.Argument[..context.Argument.IndexOf('/')];
+
+        // Ищем сообщение по ID чата или по ID примонтированного чата если он задан и названию
+        if (await db.FindUserMountAsync(mountName, context.Message.From!.Id, cancellationToken: cancellationToken) is UserMount mount)
+            messageFound = await db.FindSavedMessageAsync(context.Argument[(context.Argument.IndexOf('/') + 1)..], mount.ChatId, cancellationToken);
+        else
+            messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
 
         // Если такого сообщения не найдено
         if (messageFound is null)
@@ -39,6 +49,6 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
 
         logger.LogDebug("/cat - success");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.CatFoundMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
+        await botClient.ForwardMessageAsync(context.Message.Chat.Id, messageFound.ChatId, messageFound.MessageId, cancellationToken: cancellationToken);
     }
 }
