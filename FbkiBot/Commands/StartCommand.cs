@@ -17,7 +17,7 @@ public class StartCommand(BotDbContext db, ILogger<StartCommand> logger, IOption
     public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
         logger.LogDebug("Sending welcome message");
-        
+
         // Если монтирования нет
         if (await db.FindUserMountAsync("", context.Message.From!.Id, cancellationToken) is not UserMount existingMount)
         {
