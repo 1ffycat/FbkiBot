@@ -85,7 +85,6 @@ public class TextConstSettings
     /// </summary>
     public required string RmMountNotFoundMessage { get; set; }
 
-
     /// <summary>
     /// Сообщение, которое отправляется при успешном выполнении команды /rmmount
     /// </summary>

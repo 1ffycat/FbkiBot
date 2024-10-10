@@ -40,7 +40,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
                 foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken));
         }
 
-
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 
         var msgBuilder = new StringBuilder();

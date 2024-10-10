@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /App
 
-COPY . ./
+COPY ./FbkiBot/ ./
 RUN dotnet restore
 RUN dotnet publish -c release -o out
 
