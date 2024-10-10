@@ -23,7 +23,11 @@ jobs:
       run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
 
     - name: Build Docker image
-      run: docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/fbki-bot:latest .
+      run: |
+        COMMIT_HASH=$(echo ${{ github.sha }} | cut -c1-7)
+        docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/fbki-bot -t ghcr.io/${{ secrets.GHCR_USERNAME }}/fbki-bot:$COMMIT_HASH .
 
     - name: Push Docker image
-      run: docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/fbki-bot:latest
+      run: |
+        docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/fbki-bot
+        docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/fbki-bot:$COMMIT_HASH
