@@ -76,4 +76,16 @@ public class CommandParserServiceTest
         Assert.Equal("/привет", context.Command);
         Assert.Equal(["мир"], context.Arguments.AsSpan());
     }
+
+    [Fact]
+    public void RemovesEmptyArgumentsFromMessagesWithDoubleSpaces()
+    {
+        var parser = new CommandParserService();
+        var message = new Message() { Text = "/echo  test" };
+
+        var context = parser.BuildContext(message);
+
+        Assert.Equal("/echo", context.Command);
+        Assert.Equal(["test"], context.Arguments.AsSpan());
+    }
 }

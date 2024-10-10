@@ -18,8 +18,8 @@ public class CommandParserService
         // Если сообщение пустое - у нас нет ни команды ни аргументов
         if (string.IsNullOrEmpty(message.Text)) return new(message, null, []);
 
-        // Разбиваем сообщение на слова
-        var tokens = message.Text?.Split(' ') ?? [];
+        // Разбиваем сообщение на слова. Удаляем пустые токены, которые появляются в случае двух пробелов подряд
+        var tokens = message.Text?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? [];
         // Получаем команду
         string? command = tokens.First();
         // Если команда не начинается со / (обычное сообщение) - не разделяем на команду и аргументы
