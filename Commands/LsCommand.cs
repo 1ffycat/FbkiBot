@@ -31,13 +31,11 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken);
 
         var mounts = await db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id).ToListAsync();
-        // || mounts.Any(mnt => mnt.ChatId == msg.ChatId)
-        // Если категория не дана - ищем во всех
+        //Ищем сообщения в примонтированых чатах
         foreach (var mount in mounts)
         {
             if (context.Argument is null)
                 foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId).ToListAsync(cancellationToken: cancellationToken));
-            // Если категория дана - ищем по ней (чтобы начиналось с категории)
             else
                 foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId && EF.Functions.Like(msg.Name, $"{context.Argument}%")).ToListAsync(cancellationToken: cancellationToken));
         }
@@ -63,6 +61,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         logger.LogDebug("/ls - success");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccess}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccessMessage}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
     }
 }

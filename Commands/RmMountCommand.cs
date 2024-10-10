@@ -23,7 +23,7 @@ public class RmMountCommand(BotDbContext db, ILogger<RmMountCommand> logger, IOp
         // Если нет mount с этим чатом
         if (!db.UserMounts.Any(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id))
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, "mount с этим чатом нет", cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmMountNotFoundMessage, cancellationToken: cancellationToken);
             return;
         }
 
@@ -31,6 +31,6 @@ public class RmMountCommand(BotDbContext db, ILogger<RmMountCommand> logger, IOp
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 
         logger.LogDebug("/rmmount - success");
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, "mount удален", cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccessMessage, cancellationToken: cancellationToken);
     }
 }

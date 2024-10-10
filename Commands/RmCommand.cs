@@ -49,6 +49,6 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, IOptions<Te
 
         logger.LogDebug("Saved message removed");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccess, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccessMessage, cancellationToken: cancellationToken);
     }
 }
