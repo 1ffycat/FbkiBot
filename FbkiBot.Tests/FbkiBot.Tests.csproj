@@ -18,4 +18,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FbkiBot\FbkiBot.csproj" />
+  </ItemGroup>
+
 </Project>
