@@ -38,7 +38,7 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, IOptions<Te
         }
 
         // Если удалять сообщения может только автор и пользователь не автор
-        if (saveSettings.Value.CanOnlyBeRemovedByAuthor && messageFound.AddedById != message.From.Id)
+        if (saveSettings.Value.CanOnlyBeRemovedByAuthor && messageFound.AddedById != message.From!.Id)
         {
             logger.LogDebug("/rm denied - not an author");
             await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.RmNotAuthorMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);

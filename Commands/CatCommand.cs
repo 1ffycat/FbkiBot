@@ -1,6 +1,7 @@
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
+using FbkiBot.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -26,9 +27,17 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
             await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.SaveNoNameProvidedMessage, cancellationToken: cancellationToken);
             return;
         }
+        SavedMessage? messageFound;
+        string mountName = "";
+        if (arg.Any(x => x=='/'))
+            mountName = arg[..arg.IndexOf('/')];
 
-        // Ищем сообщение по ID чата и названию
-        var messageFound = await db.FindSavedMessageAsync(arg, message.Chat.Id, cancellationToken);
+        if (await db.FindUserMountAsync(mountName, message.From!.Id, cancellationToken: cancellationToken) is UserMount mount)
+            messageFound = await db.FindSavedMessageAsync(arg[(arg.IndexOf('/')+1)..], mount.ChatId, cancellationToken);       
+        else
+            // Ищем сообщение по ID чата и названию
+            messageFound = await db.FindSavedMessageAsync(arg, message.Chat.Id, cancellationToken);
+
 
         // Если такого сообщения не найдено
         if (messageFound is null)
@@ -39,7 +48,6 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
         }
 
         logger.LogDebug("/cat - success");
-
-        await botClient.SendTextMessageAsync(message.Chat.Id, textConsts.Value.CatFoundMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
+        await botClient.ForwardMessageAsync(message.Chat.Id, messageFound.ChatId, messageFound.MessageId, cancellationToken: cancellationToken);
     }
 }

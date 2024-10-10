@@ -42,7 +42,7 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger, IOptions<
             return;
         }
 
-        var saveMessage = new SavedMessage(name, replyMsg.MessageId, message.Chat.Id, message.From);
+        var saveMessage = new SavedMessage(name, replyMsg.MessageId, message.Chat.Id, message.From!);
 
         logger.LogDebug("Saving message to db...");
 

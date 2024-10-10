@@ -24,13 +24,24 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         var category = IChatCommand.GetArg(message);  // Получаем текст после команды
 
         List<SavedMessage> foundMessages;
-
-        // Если категория не дана - ищем во всех
         if (category is null)
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == message.Chat.Id).ToListAsync(cancellationToken: cancellationToken);
         // Если категория дана - ищем по ней (чтобы начиналось с категории)
         else
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == message.Chat.Id && EF.Functions.Like(msg.Name, $"{category}%")).ToListAsync(cancellationToken: cancellationToken);
+
+        var mounts = db.UserMounts.Where(mnt => mnt.UserId == message.Chat.Id).ToList();
+        // || mounts.Any(mnt => mnt.ChatId == msg.ChatId)
+        // Если категория не дана - ищем во всех
+        foreach (var mount in mounts)
+        {
+            if (category is null)
+                foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId).ToListAsync(cancellationToken: cancellationToken));
+            // Если категория дана - ищем по ней (чтобы начиналось с категории)
+            else
+                foundMessages.AddRange(await db.SavedMessages.Where(msg => msg.ChatId == mount.ChatId && EF.Functions.Like(msg.Name, $"{category}%")).ToListAsync(cancellationToken: cancellationToken));
+        }
+
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
 
@@ -40,7 +51,8 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(msg.Name);
+            msgBuilder.Append(mounts.Any(mnt => mnt.ChatId != msg.ChatId) ? msg.Name : $"{mounts.Find(mnt => mnt.ChatId == msg.ChatId).Name}/{msg.Name}");
+            //msgBuilder.Append(msg.Name);
             msgBuilder.Append(" | [");
             msgBuilder.Append(msg.AddedByName);
             msgBuilder.Append("](tg://user?id=");
