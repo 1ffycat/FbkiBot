@@ -22,6 +22,14 @@ public class CommandParserService
         var tokens = message.Text?.Split(' ', StringSplitOptions.RemoveEmptyEntries) ?? [];
         // Получаем команду
         string? command = tokens.First();
+
+        // Если команда найдена и в ней присутствует символ @ (команда по типу /help@fbkibot)
+        if (command is not null && command.IndexOf('@') is int atId && atId != -1)
+        {
+            // Обрезаем, оставляя только часть до @
+            command = atId == -1 ? command : command[..atId];
+        }
+
         // Если команда не начинается со / (обычное сообщение) - не разделяем на команду и аргументы
         if (!command.StartsWith('/')) return new(message, null, tokens);
         // Если слеш-команда - разделяем на команду и аргументы

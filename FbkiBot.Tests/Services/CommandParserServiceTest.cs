@@ -88,4 +88,16 @@ public class CommandParserServiceTest
         Assert.Equal("/echo", context.Command);
         Assert.Equal(["test"], context.Arguments.AsSpan());
     }
+
+    [Fact]
+    public void TrimsOffPartAfterAtSign()
+    {
+        var parser = new CommandParserService();
+        var message = new Message() { Text = "/echo@test args" };
+
+        var context = parser.BuildContext(message);
+
+        Assert.Equal("/echo", context.Command);
+        Assert.Equal(["args"], context.Arguments.AsSpan());
+    }
 }
