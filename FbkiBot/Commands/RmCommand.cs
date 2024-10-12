@@ -41,6 +41,7 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, IOptions<Te
         {
             logger.LogDebug("/rm denied - not an author");
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmNotAuthorMessage, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
+            return;
         }
 
         // Удаляем сообщение и сохраняем изменения в БД.
