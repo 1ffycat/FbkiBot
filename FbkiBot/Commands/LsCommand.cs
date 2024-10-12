@@ -1,7 +1,3 @@
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Text.RegularExpressions;
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
@@ -9,7 +5,8 @@ using FbkiBot.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic;
+using System.Text;
+using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -25,36 +22,34 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
     {
         logger.LogDebug("Processing /ls");
 
-        List<FoundMessages> foundMessages;
+        List<FoundMessage> foundMessages;
 
-        if (context.Message.Chat.Id == context.Message.From!.Id)
+        // Если категория не дана - ищем во всех
+        if (context.Argument is null)
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
+            .Select(msg => new FoundMessage(msg, null))
+            .ToListAsync(cancellationToken: cancellationToken);
+        // Если категория дана - ищем по ней (чтобы начиналось с категории)
+        else
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
+            .Select(msg => new FoundMessage(msg, null))
+            .ToListAsync(cancellationToken: cancellationToken);
+
+        if (context.Message.Chat.Type == ChatType.Private)
         {
             var userSavedMessages = await db.SavedMessages.Join(
-                db.UserMounts.Where(mnt => mnt.UserId == context.Message.Chat.Id),
+                db.UserMounts.Where(mnt => mnt.UserId == context.Message.From!.Id),
                 msg => msg.ChatId,
                 mnt => mnt.ChatId,
-                (msg, mnt) => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, mnt.Name))
+                (msg, mnt) => new FoundMessage(msg, mnt.Name))
                 .ToListAsync();
 
             // Если категория не дана - ищем во всех
             if (context.Argument is null)
-                foundMessages = userSavedMessages;
+                foundMessages.AddRange(userSavedMessages);
             // Если категория дана - ищем по ней (чтобы начиналось с категории)
             else
-                foundMessages = userSavedMessages.Where(msg => Regex.IsMatch(msg.MessageName, $"^{context.Argument}.*")).ToList();
-        }
-        else
-        {
-            // Если категория не дана - ищем во всех
-            if (context.Argument is null)
-                foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
-                .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, ""))
-                .ToListAsync(cancellationToken: cancellationToken);
-            // Если категория дана - ищем по ней (чтобы начиналось с категории)
-            else
-                foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
-                .Select(msg => new FoundMessages(msg.Name, msg.MessageId, msg.ChatId, msg.AddedById, msg.AddedByUsername, msg.AddedByName, msg.AddedAtUtc, ""))
-                .ToListAsync(cancellationToken: cancellationToken);
+                foundMessages.AddRange(userSavedMessages.Where(msg => Regex.IsMatch(msg.Message.Name, $"^{context.Argument}.*")).ToList());
         }
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
@@ -65,13 +60,13 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(msg.MountName is "" ? msg.MessageName : $"{msg.MountName}/{msg.MessageName}");
+            msgBuilder.Append(msg.MountName is null ? msg.Message.Name : $"{msg.MountName}/{msg.Message.Name}");
             msgBuilder.Append(" | [");
-            msgBuilder.Append(msg.AddedByName);
+            msgBuilder.Append(msg.Message.AddedByName);
             msgBuilder.Append("](tg://user?id=");
-            msgBuilder.Append(msg.AddedById);
+            msgBuilder.Append(msg.Message.AddedById);
             msgBuilder.Append(") | ");
-            msgBuilder.Append(msg.AddedAtUtc);
+            msgBuilder.Append(msg.Message.AddedAtUtc);
             msgBuilder.AppendLine();
         }
 

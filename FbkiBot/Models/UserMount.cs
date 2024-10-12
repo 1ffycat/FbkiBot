@@ -3,7 +3,7 @@
 namespace FbkiBot.Models;
 
 /// <summary>
-/// Сохраненное сообщение
+/// Монтирование
 /// </summary>
 public class UserMount
 {
@@ -26,7 +26,7 @@ public class UserMount
     /// <summary>
     /// Название монтирования
     /// </summary>
-    public string? Name { get; set; }
+    public string Name { get; set; }
 
 
     /// <summary>

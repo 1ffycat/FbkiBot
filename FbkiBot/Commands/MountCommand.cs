@@ -1,12 +1,13 @@
 ﻿using FbkiBot.Attributes;
+using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using FbkiBot.Commands;
 
 [BotCommand("/mount", "Связывает сохранения из чата с личной перепиской с ботом", "/mount <название>")]
 public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
@@ -26,14 +27,14 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
         }
 
         // Если монтирование с таким названием уже существует
-        if (await db.FindUserMountAsync(context.Argument, context.Message.From!.Id, cancellationToken) is UserMount existingMount)
+        if (db.UserMounts.Any(mnt => EF.Functions.Like(mnt.Name, context.Argument) && context.Message.From!.Id == mnt.UserId))
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountNameTakenMessage, cancellationToken: cancellationToken);
             return;
         }
 
         // Если монтирование для этого чата уже существует
-        if (db.UserMounts.Count(mnt => mnt.UserId == context.Message.From.Id && mnt.ChatId == context.Message.Chat.Id) != 0)
+        if (db.UserMounts.Any(mnt => mnt.UserId == context.Message.From.Id && mnt.ChatId == context.Message.Chat.Id))
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountIsExistsMessage, cancellationToken: cancellationToken);
             return;

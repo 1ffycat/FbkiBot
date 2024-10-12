@@ -1,6 +1,5 @@
 using FbkiBot.Models;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 

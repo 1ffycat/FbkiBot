@@ -1,9 +1,7 @@
-using System.Security.Cryptography.X509Certificates;
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -20,18 +18,19 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOpti
     {
         logger.LogDebug("Processing umount command");
 
-        // Если нет mount с этим чатом
-        if (!db.UserMounts.Any(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id))
+        var mount = db.UserMounts.FirstOrDefault(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id);
+
+        if (mount is null)
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmMountNotFoundMessage, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.UmountNotFoundMessage, cancellationToken: cancellationToken);
             return;
         }
 
         // Удаляем монтирование и сохраняем изменения в БД
-        db.UserMounts.Remove(await db.UserMounts.FirstAsync(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id));
+        db.UserMounts.Remove(mount);
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 
         logger.LogDebug("/umount - success");
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.RmSuccessMessage, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.UmountSuccessMessage, cancellationToken: cancellationToken);
     }
 }

@@ -66,12 +66,12 @@ public class TextConstSettings
     public required string MountNoNameMessage { get; set; }
 
     /// <summary>
-    /// Сообщение, которое отправляется когда монитрование с таким названием у пользователя уже сществует
+    /// Сообщение, которое отправляется когда монтирование с таким названием у пользователя уже сществует
     /// </summary>
     public required string MountNameTakenMessage { get; set; }
 
     /// <summary>
-    /// Сообщение, которое отправляется когда монитрование этого чата уже было произведено у пользователя
+    /// Сообщение, которое отправляется когда монтирование этого чата уже было произведено у пользователя
     /// </summary>
     public required string MountIsExistsMessage { get; set; }
 
@@ -83,10 +83,10 @@ public class TextConstSettings
     /// <summary>
     /// Сообщение, которое отправляется когда этот чат не примонтирован
     /// </summary>
-    public required string RmMountNotFoundMessage { get; set; }
+    public required string UmountNotFoundMessage { get; set; }
 
     /// <summary>
     /// Сообщение, которое отправляется при успешном выполнении команды /rmmount
     /// </summary>
-    public required string RmMountSuccessMessage { get; set; }
+    public required string UmountSuccessMessage { get; set; }
 }

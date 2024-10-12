@@ -28,14 +28,14 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
 
         SavedMessage? messageFound;
         string mountName = "";
-
+        var indexSlash = context.Argument.IndexOf('/');
         // Получаем имя примонтированого чата пользователя
-        if (context.Argument.Any(x => x == '/'))
-            mountName = context.Argument[..context.Argument.IndexOf('/')];
+        if (indexSlash != -1)
+            mountName = context.Argument[..indexSlash];
 
         // Ищем сообщение по ID чата или по ID примонтированного чата если он задан и названию
         if (await db.FindUserMountAsync(mountName, context.Message.From!.Id, cancellationToken: cancellationToken) is UserMount mount)
-            messageFound = await db.FindSavedMessageAsync(context.Argument[(context.Argument.IndexOf('/') + 1)..], mount.ChatId, cancellationToken);
+            messageFound = await db.FindSavedMessageAsync(context.Argument[(indexSlash + 1)..], mount.ChatId, cancellationToken);
         else
             messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
 
