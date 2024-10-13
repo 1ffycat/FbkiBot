@@ -3,7 +3,7 @@
 namespace FbkiBot.Models;
 
 /// <summary>
-/// Монтирование
+/// Монтирование групповых чатов в личную переписку с ботом
 /// </summary>
 public class UserMount
 {
@@ -13,13 +13,13 @@ public class UserMount
     public int Id { get; set; }
 
     /// <summary>
-    /// ID пользователя
+    /// ID пользователя который монтирует чат
     /// </summary>
     public long UserId { get; set; }
 
 
     /// <summary>
-    /// ID чата
+    /// ID чата который монтируется
     /// </summary>
     public long ChatId { get; set; }
 

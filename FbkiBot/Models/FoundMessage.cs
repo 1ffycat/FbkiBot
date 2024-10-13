@@ -1,7 +1,7 @@
 namespace FbkiBot.Models;
 
 /// <summary>
-/// Найденное сообщение
+/// Найденное сообщениеб включается в себя сохраненное сообщение и имя монтирования по котором оно было найдено, нужно для правильного вывода сообщений
 /// </summary>
 public class FoundMessage
 {
@@ -16,7 +16,7 @@ public class FoundMessage
     public string? MountName { get; set; }
 
     /// <summary>
-    /// Сообщение
+    /// Сообщение которое найдено по монтированию
     /// </summary>
     public SavedMessage Message { get; set; }
 

@@ -23,12 +23,13 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         List<FoundMessage> foundMessages;
 
-        // Если категория не дана - ищем во всех
-        if (context.Argument is null)
+        // Выбираем из таблицы сохраненных сообщений те у который Id чата равен чату откуда пришло сообщение
+        // И создаем класс найденный сообщений в который входит класс сохраненных сообщений и имя монтирования равно null
+        if (context.Argument is null)           
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
             .Select(msg => new FoundMessage(msg, null))
             .ToListAsync(cancellationToken: cancellationToken);
-        // Если категория дана - ищем по ней (чтобы начиналось с категории)
+        // Тоже самое что и выше но фильтруем еще по категории
         else
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
             .Select(msg => new FoundMessage(msg, null))
@@ -36,6 +37,8 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         if (context.Message.Chat.Type == ChatType.Private)
         {
+            // Делаем inner join таблицы сохраненный сообщений и таблицы монтирований определенного пользователя, по Id чата
+            // И создаем класс найденный сообщений в который входит класс сохраненных сообщений и имя монтирования по которому найдено сообщение
             var userSavedMessages = await db.SavedMessages.Join(
                 db.UserMounts.Where(mnt => mnt.UserId == context.Message.From!.Id),
                 msg => msg.ChatId,
@@ -43,10 +46,10 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
                 (msg, mnt) => new FoundMessage(msg, mnt.Name))
                 .ToListAsync();
 
-            // Если категория не дана - ищем во всех
+            // Если категория не дана добавляем все найденные сообщения по монтированиям
             if (context.Argument is null)
                 foundMessages.AddRange(userSavedMessages);
-            // Если категория дана - ищем по ней (чтобы начиналось с категории)
+            // Если категория дана филтруем найденные сообщения по монтированиям по категории
             else
                 foundMessages.AddRange(userSavedMessages.Where(msg => msg.Message.Name.StartsWith($"{context.Argument}", StringComparison.OrdinalIgnoreCase)).ToList());
         }
