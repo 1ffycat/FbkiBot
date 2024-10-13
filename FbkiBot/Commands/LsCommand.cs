@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
-using System.Text.RegularExpressions;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -49,7 +48,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
                 foundMessages.AddRange(userSavedMessages);
             // Если категория дана - ищем по ней (чтобы начиналось с категории)
             else
-                foundMessages.AddRange(userSavedMessages.Where(msg => Regex.IsMatch(msg.Message.Name, $"^{context.Argument}.*")).ToList());
+                foundMessages.AddRange(userSavedMessages.Where(msg => msg.Message.Name.StartsWith($"{context.Argument}", StringComparison.OrdinalIgnoreCase)).ToList());
         }
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
