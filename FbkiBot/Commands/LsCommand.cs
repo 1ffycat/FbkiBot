@@ -25,7 +25,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         // Выбираем из таблицы сохраненных сообщений те у который Id чата равен чату откуда пришло сообщение
         // И создаем класс найденный сообщений в который входит класс сохраненных сообщений и имя монтирования равно null
-        if (context.Argument is null)           
+        if (context.Argument is null)
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
             .Select(msg => new FoundMessage(msg, null))
             .ToListAsync(cancellationToken: cancellationToken);

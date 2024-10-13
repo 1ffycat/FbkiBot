@@ -2,11 +2,11 @@ using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using Microsoft.EntityFrameworkCore;
 
 namespace FbkiBot.Commands;
 
