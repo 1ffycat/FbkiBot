@@ -15,6 +15,11 @@
 
 Хук можно взять [здесь](https://gist.github.com/1ffycat/54729c77c026a774e431a59c305f5565). Кладем в папку `.git/hooks/` (чтобы получился файл `.git/hooks/pre-commit`, расширения нет)
 
+Или установить одной командой (из корня репы):
+- **Windows 10+ (PowerShell):** `Invoke-WebRequest https://gist.githubusercontent.com/1ffycat/54729c77c026a774e431a59c305f5565/raw/eb85b3e11fa4a6ff78993d98d9ac96716ce20940/pre-commit -O .git/hooks/pre-commit`
+- **Windows 10+ (cmd):** `curl.exe https://gist.githubusercontent.com/1ffycat/54729c77c026a774e431a59c305f5565/raw/eb85b3e11fa4a6ff78993d98d9ac96716ce20940/pre-commit -o .git/hooks/pre-commit`
+- **Linux:** `wget https://gist.githubusercontent.com/1ffycat/54729c77c026a774e431a59c305f5565/raw/eb85b3e11fa4a6ff78993d98d9ac96716ce20940/pre-commit -O .git/hooks/pre-commit`
+
 ![Гиперопека](https://media1.tenor.com/m/EjSgVuIVEM8AAAAd/monjjunirawr-cat-mom.gif)
 
 _Гиперопека - теперь в Git!_
