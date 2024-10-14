@@ -30,11 +30,11 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
         SavedMessage? messageFound;
         string mountName = "";
         var indexSlash = context.Argument.IndexOf('/');
-        // Получаем имя примонтированого чата пользователя
+        // Если в сообщении есть / - получаем имя примонтированого чата пользователя
         if (indexSlash != -1)
-            mountName = context.Argument[..indexSlash];
+            mountName = context.Argument[..indexSlash];  // Весь текст до первого слеша
 
-        // Ищем сообщение по ID чата или по ID примонтированного чата если он задан и названию
+        // Ищем сообщение по ID чата или по ID примонтированного чата, если он задан, и названию
         if (await db.UserMounts.SingleOrDefaultAsync(mnt => mnt.UserId == context.Message.From!.Id && EF.Functions.Like(mnt.Name, mountName), cancellationToken: cancellationToken) is UserMount mount)
             messageFound = await db.FindSavedMessageAsync(context.Argument[(indexSlash + 1)..], mount.ChatId, cancellationToken);
         else

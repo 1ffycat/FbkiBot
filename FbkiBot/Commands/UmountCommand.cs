@@ -21,7 +21,7 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOpti
         // Ищем монтирование чата по пользователю, который написал команду и Id чата в котором была написана команда
         var mount = db.UserMounts.FirstOrDefault(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id);
 
-        // Если такое понтирование не найдено сообщаем об этом пользователю 
+        // Если такое монтирование не найдено - сообщаем об этом пользователю 
         if (mount is null)
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.UmountNotFoundMessage, cancellationToken: cancellationToken);

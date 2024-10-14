@@ -1,5 +1,4 @@
 ﻿using FbkiBot.Attributes;
-using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
@@ -8,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+
+namespace FbkiBot.Commands;
 
 [BotCommand("/mount", "Связывает сохранения из чата с личной перепиской с ботом", "/mount <название>")]
 public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
@@ -34,13 +35,13 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger, IOption
         }
 
         // Если монтирование для этого чата уже существует
-        if (db.UserMounts.Any(mnt => mnt.UserId == context.Message.From.Id && mnt.ChatId == context.Message.Chat.Id))
+        if (db.UserMounts.Any(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id))
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountIsExistsMessage, cancellationToken: cancellationToken);
             return;
         }
 
-        var userMount = new UserMount(context.Argument, context.Message.Chat.Id, context.Message.From);
+        var userMount = new UserMount(context.Argument, context.Message.Chat.Id, context.Message.From!);
 
         logger.LogDebug("Saving UserMount to db...");
 

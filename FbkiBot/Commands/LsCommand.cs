@@ -23,34 +23,36 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         List<FoundMessage> foundMessages;
 
-        // Выбираем из таблицы сохраненных сообщений те у который Id чата равен чату откуда пришло сообщение
-        // И создаем класс найденный сообщений в который входит класс сохраненных сообщений и имя монтирования равно null
+        // Если не передано категории
         if (context.Argument is null)
-            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)
-            .Select(msg => new FoundMessage(msg, null))
+            // Находим монтирования для текущего чата
+            foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id)  // ID соответствует текущему чату
+            .Select(msg => new FoundMessage(msg, null))  // название монтирования оставляем пустым
             .ToListAsync(cancellationToken: cancellationToken);
-        // Тоже самое что и выше но фильтруем еще по категории
+        // Если категория передана - фильтруем по ней
         else
+            // Сообщения с таким же ID чата, начинающиеся с переданной категории
             foundMessages = await db.SavedMessages.Where(msg => msg.ChatId == context.Message.Chat.Id && EF.Functions.Like(msg.Name, $"{context.Argument}%"))
             .Select(msg => new FoundMessage(msg, null))
             .ToListAsync(cancellationToken: cancellationToken);
 
+        // Если сообщение в ЛС
         if (context.Message.Chat.Type == ChatType.Private)
         {
-            // Делаем inner join таблицы сохраненный сообщений и таблицы монтирований определенного пользователя, по Id чата
-            // И создаем класс найденный сообщений в который входит класс сохраненных сообщений и имя монтирования по которому найдено сообщение
+            // Добавляем в список найденных сообщений сохраненки из примонтированных чатов
             var userSavedMessages = await db.SavedMessages.Join(
-                db.UserMounts.Where(mnt => mnt.UserId == context.Message.From!.Id),
+                db.UserMounts.Where(mnt => mnt.UserId == context.Message.From!.Id),  // выбираем монтирования текущего пользователя
                 msg => msg.ChatId,
                 mnt => mnt.ChatId,
                 (msg, mnt) => new FoundMessage(msg, mnt.Name))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
-            // Если категория не дана добавляем все найденные сообщения по монтированиям
+            // Если категория не дана - добавляем все сообщения из примонтированных чатов
             if (context.Argument is null)
                 foundMessages.AddRange(userSavedMessages);
-            // Если категория дана филтруем найденные сообщения по монтированиям по категории
+            // Если категория дана - фильтруем сообщения из примонтированных чатов по ней
             else
+                // Добавляем только те сообщения, которые начинаются с данной категории
                 foundMessages.AddRange(userSavedMessages.Where(msg => msg.Message.Name.StartsWith($"{context.Argument}", StringComparison.OrdinalIgnoreCase)).ToList());
         }
 
