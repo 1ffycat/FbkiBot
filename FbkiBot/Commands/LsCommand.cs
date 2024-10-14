@@ -53,7 +53,13 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
             // Если категория дана - фильтруем сообщения из примонтированных чатов по ней
             else
                 // Добавляем только те сообщения, которые начинаются с данной категории
-                foundMessages.AddRange(userSavedMessages.Where(msg => msg.Message.Name.StartsWith($"{context.Argument}", StringComparison.OrdinalIgnoreCase)).ToList());
+                foundMessages.AddRange(userSavedMessages.Where(msg => $"{msg.MountName}/{msg.Message.Name}".StartsWith(context.Argument, StringComparison.OrdinalIgnoreCase)).ToList());
+        }
+
+        if (foundMessages.Count == 0)
+        {
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.LsNoSavedMessages, cancellationToken: cancellationToken);
+            return;
         }
 
         logger.LogDebug("/ls - found {count} messages", foundMessages.Count);
