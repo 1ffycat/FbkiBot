@@ -56,6 +56,11 @@ public class TextConstSettings
     public required string LsSuccessMessage { get; set; }
 
     /// <summary>
+    /// Сообщение, которое отправляется когда команда /ls не нашла ни одного сообщения
+    /// </summary>
+    public required string LsNoSavedMessages { get; set; }
+
+    /// <summary>
     /// Сообщение, которое отправляется когда монтируется личный чат с ботом
     /// </summary>
     public required string MountIsPersonalChatMessage { get; set; }
