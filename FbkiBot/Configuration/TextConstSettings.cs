@@ -89,4 +89,14 @@ public class TextConstSettings
     /// Сообщение, которое отправляется при успешном выполнении команды /rmmount
     /// </summary>
     public required string UmountSuccessMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется когда у пользователя нет ни одного монтирования
+    /// </summary>
+    public required string MountsNoMounts { get; set; }
+
+    /// <summary>
+    /// "Шапка" возвращаемого списка монтирований
+    /// </summary>
+    public required string MountsHeader { get; set; }
 }

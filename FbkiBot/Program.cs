@@ -35,6 +35,7 @@ builder.AddCommand<RmCommand>();
 builder.AddCommand<LsCommand>();
 builder.AddCommand<MountCommand>();
 builder.AddCommand<UmountCommand>();
+builder.AddCommand<MountsCommand>();
 
 // Обходим круговую зависимость в HelpCommand. Костыли еще никогда не были так лаконичны
 builder.Services.AddTransient<Func<IEnumerable<IChatCommand>>>(sp =>
