@@ -9,7 +9,7 @@ using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
-[BotCommand("/umount", "Удаляет mount", "/umount")]
+[BotCommand("/umount", "Отвязывает сохранения из этого чата от личной переписки с ботом")]
 public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
 {
     public bool CanExecute(CommandContext context) => context.Command?.Equals("/umount", StringComparison.OrdinalIgnoreCase) ?? false;
