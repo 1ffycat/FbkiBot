@@ -10,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 
 var builder = Host.CreateApplicationBuilder(args);
 
+// Добавляем файл с текстовыми константами
+builder.Configuration.AddJsonFile("textconsts.json");
+
 // Парсим настройки
 builder.AddSettings<TelegramSettings>("Telegram");
 builder.AddSettings<TextConstSettings>("TextConsts");

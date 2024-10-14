@@ -24,6 +24,7 @@
 
   <ItemGroup>
    <None Include="appsettings.json" CopyToPublishDirectory="Always" />
+   <None Include="textconsts.json" CopyToPublishDirectory="Always" />
   </ItemGroup>
 
 </Project>
