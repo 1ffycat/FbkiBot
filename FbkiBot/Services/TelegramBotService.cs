@@ -1,9 +1,9 @@
-using System.Reflection;
 using FbkiBot.Attributes;
 using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;

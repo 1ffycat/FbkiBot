@@ -13,6 +13,11 @@ public class BotDbContext : DbContext
     /// </summary>
     public DbSet<SavedMessage> SavedMessages { get; set; }
 
+    /// <summary>
+    /// Монтирование, добавленное командой /mount
+    /// </summary>
+    public DbSet<UserMount> UserMounts { get; set; }
+
     public async Task<SavedMessage?> FindSavedMessageAsync(string name, long chatId, CancellationToken cancellationToken) => await SavedMessages.SingleOrDefaultAsync(msg => msg.ChatId == chatId && EF.Functions.Like(msg.Name, name), cancellationToken: cancellationToken);
 
     /// <summary>

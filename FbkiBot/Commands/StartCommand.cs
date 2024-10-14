@@ -16,6 +16,7 @@ public class StartCommand(ILogger<StartCommand> logger, IOptions<TextConstSettin
     public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
     {
         logger.LogDebug("Sending welcome message");
+
         await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.WelcomeMessage, cancellationToken: cancellationToken);
     }
 }

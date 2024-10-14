@@ -48,10 +48,45 @@ public class TextConstSettings
     /// <summary>
     /// Сообщение, которое отправляется когда сохраненное сообщение было успешно удалено
     /// </summary>
-    public required string RmSuccess { get; set; }
+    public required string RmSuccessMessage { get; set; }
 
     /// <summary>
     /// Сообщение, которое отправляется при успешном выполнении команды /ls
     /// </summary>
-    public required string LsSuccess { get; set; }
+    public required string LsSuccessMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется когда монтируется личный чат с ботом
+    /// </summary>
+    public required string MountIsPersonalChatMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется когда пользователь не задал название монтирования
+    /// </summary>
+    public required string MountNoNameMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется когда монтирование с таким названием у пользователя уже сществует
+    /// </summary>
+    public required string MountNameTakenMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется когда монтирование этого чата уже было произведено у пользователя
+    /// </summary>
+    public required string MountIsExistsMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется при успешном выполнении команды /mount
+    /// </summary>
+    public required string MountSuccessMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется когда этот чат не примонтирован
+    /// </summary>
+    public required string UmountNotFoundMessage { get; set; }
+
+    /// <summary>
+    /// Сообщение, которое отправляется при успешном выполнении команды /rmmount
+    /// </summary>
+    public required string UmountSuccessMessage { get; set; }
 }
