@@ -2,7 +2,6 @@ using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -16,9 +15,7 @@ public class SaveCommandTest
 {
     private BotDbContext MakeInMemoryDb()
     {
-        var con = new SqliteConnection("Filename=:memory:");
-        con.Open();
-        return new BotDbContext(new DbContextOptionsBuilder<BotDbContext>().UseSqlite(con).Options);
+        return new BotDbContext(new DbContextOptionsBuilder<BotDbContext>().UseInMemoryDatabase("test-db").Options);
     }
 
     private (BotDbContext db, ILogger<SaveCommand> logger, IOptions<TextConstSettings> textConsts, CommandContext context, ITelegramBotClient botClient) BuildEnvironment(string command, string[] args)

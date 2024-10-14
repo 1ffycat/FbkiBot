@@ -13,12 +13,12 @@ var builder = Host.CreateApplicationBuilder(args);
 // Парсим настройки
 builder.AddSettings<TelegramSettings>("Telegram");
 builder.AddSettings<TextConstSettings>("TextConsts");
-builder.AddSettings<MessageSavingSettings>("Message saving");
+builder.AddSettings<MessageSavingSettings>("MessageSaving");
 
 // Добавляем БД в DI контейнер
 builder.Services.AddDbContext<BotDbContext>(conf =>
 {
-    conf.UseSqlite(builder.Configuration.GetConnectionString("Sqlite"));
+    conf.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
 });
 
 // Добавляем сервисы в DI контейнер

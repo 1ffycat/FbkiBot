@@ -26,6 +26,12 @@ public class BotDbContext : DbContext
     public BotDbContext(DbContextOptions<BotDbContext> options) : base(options)
     {
         // Убеждаемся что файл БД существует
-        Database.EnsureCreated();
+        //Database.EnsureCreated();
+        if (!Database.IsInMemory()) Database.Migrate();
+        else
+        {
+            Database.EnsureDeleted();
+            Database.EnsureCreated();
+        }
     }
 }

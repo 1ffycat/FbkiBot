@@ -10,7 +10,7 @@ public class SavedMessage
     /// <summary>
     /// ID в БД
     /// </summary>
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// Дата добавления
@@ -18,7 +18,7 @@ public class SavedMessage
     public DateTime AddedAtUtc { get; set; }
 
     /// <summary>
-    /// ID атвора
+    /// ID автора
     /// </summary>
     public long AddedById { get; set; }
 

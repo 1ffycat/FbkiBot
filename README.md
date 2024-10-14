@@ -6,6 +6,10 @@
 2. Выдохнули.
 3. Читаем дальше
 
+## ВАЖНО: После миграции с SQLite на PostgreSQL
+1. Для запуска бота во время тестирования запускаем PostgreSQL с настройками как в файле appsettings.Development.json (`docker run -e POSTGRES_USER=FbkiBot -e POSTGRES_DB=FbkiBot -e POSTGRES_PASSWORD=fbki1337 -p 5432:5432 -d postgres:latest`)
+2. После изменений в БД, добавляем миграцию `dotnet ef migrations add <название>`
+
 ## Как добавлять фичи
 _Исправления очепяток и мелких багов - тоже важный вклад_
 1. Создаем форк репозитория
@@ -80,6 +84,9 @@ _^^^ Он добавил команду в бота_
 _Таблицы? Как в Excel?_
 
 ## Как запустить у себя (для тестов или личного пользования)
+
+_Для тестирования рекомендуется запускать бота с аргументом `--environment=Development`, либо с переменной среды `DOTNET_ENVIRONMENT="Development"`_
+
 ### Запуск
 #### Docker 
 Релиз из репы: `docker run ghcr.io/1ffycat/fbki-bot`

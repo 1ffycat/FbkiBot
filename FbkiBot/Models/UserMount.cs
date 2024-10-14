@@ -10,7 +10,7 @@ public class UserMount
     /// <summary>
     /// ID в БД
     /// </summary>
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     /// <summary>
     /// ID пользователя который монтирует чат

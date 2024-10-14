@@ -1,6 +1,7 @@
 using FbkiBot.Attributes;
 using FbkiBot.Commands;
 using FbkiBot.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Reflection;
@@ -17,7 +18,7 @@ namespace FbkiBot.Services;
 /// <param name="tgSettings">Специфичные для Telegram настройки (в т.ч. BotToken)</param>
 /// <param name="commands">Список всех включенных команд</param>
 /// <param name="logger">Логгер для внутреннего использования</param>
-public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerable<IChatCommand> commands, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IBotService
+public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IBotService
 {
     private readonly TelegramBotClient _botClient = new(tgSettings.Value.BotToken);
 
@@ -53,6 +54,10 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerab
     {
         logger.LogDebug("Evaluating all available commands and their descriptions");
 
+        using var scope = serviceProvider.CreateAsyncScope();
+
+        var commands = scope.ServiceProvider.GetServices<IChatCommand>();
+
         var botCommands = commands.Select(c => c.GetType().GetCustomAttribute<BotCommandAttribute>())
             .Where(c => c is not null)
             .Select(c => new BotCommand()
@@ -81,6 +86,10 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IEnumerab
 
         // Парсим команду и аргументы из сообщения
         var context = cmdParser.BuildContext(message);
+
+        using var scope = serviceProvider.CreateAsyncScope();
+
+        var commands = scope.ServiceProvider.GetServices<IChatCommand>();
 
         foreach (var command in commands)
         {
