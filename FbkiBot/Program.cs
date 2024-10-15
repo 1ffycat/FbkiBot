@@ -1,4 +1,5 @@
-﻿using FbkiBot.Commands;
+﻿using System.Reflection;
+using FbkiBot.Commands;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Services;
@@ -12,6 +13,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 // Добавляем файл с текстовыми константами
 builder.Configuration.AddDefaultsJsonFile("textconsts.json", optional: true);
+builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
 // Парсим настройки
 builder.AddSettings<TelegramSettings>("Telegram");
