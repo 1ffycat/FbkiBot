@@ -87,7 +87,7 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
         // Парсим команду и аргументы из сообщения
         var context = cmdParser.BuildContext(message);
 
-        using var scope = serviceProvider.CreateAsyncScope();
+        using var scope = serviceProvider.CreateAsyncScope();  // FIXME: Где-то здесь создается новое подключение к БД при каждом сообщении - даже если не команда
 
         var commands = scope.ServiceProvider.GetServices<IChatCommand>();
 

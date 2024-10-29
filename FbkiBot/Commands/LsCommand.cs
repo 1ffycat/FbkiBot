@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Web;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -70,18 +72,19 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
         foreach (var msg in foundMessages)
         {
             msgBuilder.Append(" - ");
-            msgBuilder.Append(msg.MountName is null ? msg.Message.Name : $"{msg.MountName}/{msg.Message.Name}");
-            msgBuilder.Append(" | [");
-            msgBuilder.Append(msg.Message.AddedByName);
-            msgBuilder.Append("](tg://user?id=");
-            msgBuilder.Append(msg.Message.AddedById);
-            msgBuilder.Append(") | ");
+            msgBuilder.Append(HttpUtility.HtmlEncode(msg.MountName is null ? msg.Message.Name : $"{msg.MountName}/{msg.Message.Name}"));
+            msgBuilder.Append(" | <a href='");
+            msgBuilder.Append("tg://user?id=");
+            msgBuilder.Append(msg.Message.AddedById);  // FIXME: Ссылка не работает с Гошиным ID [1031652049] - Я ХЗ ПОЧЕМУ (возможно либа не знает что ID бывают такие длинные?)
+            msgBuilder.Append("'>");
+            msgBuilder.Append(HttpUtility.HtmlEncode(msg.Message.AddedByName));  // TODO: обдумать насколько хорош этот хотфикс, мб придумать что-то получше
+            msgBuilder.Append("</a> | ");
             msgBuilder.Append(msg.Message.AddedAtUtc);
             msgBuilder.AppendLine();
         }
 
-        logger.LogDebug("/ls - success");
+        logger.LogDebug("/ls - success {}", msgBuilder.ToString());
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccessMessage}\n{msgBuilder}", parseMode: ParseMode.Markdown, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccessMessage}\n{msgBuilder}", parseMode: ParseMode.Html, cancellationToken: cancellationToken);
     }
 }

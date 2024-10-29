@@ -1,12 +1,16 @@
 using System.Text;
+using System.Text.Encodings.Web;
+using System.Web;
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
+using FbkiBot.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Types.Enums;
 
 namespace FbkiBot.Commands;
 
@@ -44,10 +48,10 @@ public class MountsCommand(BotDbContext db, ILogger<MountsCommand> logger, IOpti
             var chat = await botClient.GetChatAsync(mount.ChatId, cancellationToken: cancellationToken);
 
             // Если не можем получить информацию о чате (например, бота удалили из него) - пишем ID чата
-            sb.AppendLine($"- {mount.Name}: {chat.Title ?? $"Chat ID: {mount.ChatId}"}");
+            sb.AppendLine($"- {HttpUtility.HtmlEncode(mount.Name)}: {HttpUtility.HtmlEncode(chat.Title ?? $"Chat ID: {mount.ChatId}")}");  // TODO: см. LsCommand.cs
         }
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, sb.ToString(), cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, sb.ToString(), cancellationToken: cancellationToken, parseMode: ParseMode.Html);
 
         logger.LogDebug("/mount - success");
     }
