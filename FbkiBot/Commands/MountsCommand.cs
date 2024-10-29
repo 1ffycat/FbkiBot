@@ -1,11 +1,9 @@
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Web;
 using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
-using FbkiBot.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

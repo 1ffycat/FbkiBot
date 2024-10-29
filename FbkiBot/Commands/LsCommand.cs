@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
-using System.Text.Encodings.Web;
 using System.Web;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -81,6 +80,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
             msgBuilder.Append("</a> | ");
             msgBuilder.Append(msg.Message.AddedAtUtc);
             msgBuilder.AppendLine();
+
         }
 
         logger.LogDebug("/ls - success {}", msgBuilder.ToString());
