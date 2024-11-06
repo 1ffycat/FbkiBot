@@ -5,7 +5,6 @@ using FbkiBot.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
@@ -27,7 +26,7 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger, IOptions<
         }
 
         // Если не выбрано сообщение
-        if (context.Message.ReplyToMessage is not Message replyMsg)
+        if (context.Message.ReplyToMessage is not { } replyMsg)
         {
             logger.LogDebug("/save denied - no reply message");
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.SaveNoReplyMessage, cancellationToken: cancellationToken);
@@ -35,7 +34,7 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger, IOptions<
         }
 
         // Если сообщение с таким названием уже существует
-        if (await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken) is SavedMessage existingMessage)
+        if (await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken) is { } existingMessage)
         {
             await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.SaveNameTakenMessage, replyToMessageId: existingMessage.MessageId, cancellationToken: cancellationToken);
             return;

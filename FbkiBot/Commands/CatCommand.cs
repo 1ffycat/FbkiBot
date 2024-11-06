@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
@@ -35,7 +34,7 @@ public class CatCommand(IOptions<TextConstSettings> textConsts, BotDbContext db,
             mountName = context.Argument[..indexSlash];  // Весь текст до первого слеша
 
         // Ищем сообщение по ID чата или по ID примонтированного чата, если он задан, и названию
-        if (await db.UserMounts.SingleOrDefaultAsync(mnt => mnt.UserId == context.Message.From!.Id && EF.Functions.Like(mnt.Name, mountName), cancellationToken: cancellationToken) is UserMount mount)
+        if (await db.UserMounts.SingleOrDefaultAsync(mnt => mnt.UserId == context.Message.From!.Id && EF.Functions.Like(mnt.Name, mountName), cancellationToken: cancellationToken) is { } mount)
             messageFound = await db.FindSavedMessageAsync(context.Argument[(indexSlash + 1)..], mount.ChatId, cancellationToken);
         else
             messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);

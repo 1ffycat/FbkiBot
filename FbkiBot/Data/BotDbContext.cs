@@ -6,7 +6,7 @@ namespace FbkiBot.Data;
 /// <summary>
 /// Контекст БД чатбота
 /// </summary>
-public class BotDbContext : DbContext
+public sealed class BotDbContext : DbContext
 {
     /// <summary>
     /// Сообщения, сохраненные командой /save

@@ -16,8 +16,9 @@ namespace FbkiBot.Services;
 /// Сервис Telegram-бота
 /// </summary>
 /// <param name="tgSettings">Специфичные для Telegram настройки (в т.ч. BotToken)</param>
-/// <param name="commands">Список всех включенных команд</param>
+/// <param name="serviceProvider">DI-провайдер сервисов</param>
 /// <param name="logger">Логгер для внутреннего использования</param>
+/// <param name="cmdParser">Парсер команд</param>
 public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IBotService
 {
     private readonly TelegramBotClient _botClient = new(tgSettings.Value.BotToken);
@@ -31,10 +32,7 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
         // Объявляем Телеграму о всех доступных командах
         await SetBotCommandsAsync(cancellationToken);
 
-        var receiverOptions = new ReceiverOptions
-        {
-            AllowedUpdates = { }
-        };
+        var receiverOptions = new ReceiverOptions();
 
         _botClient.StartReceiving(
             HandleUpdateAsync,
@@ -81,7 +79,7 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     /// <param name="cancellationToken">Токен для отмены действий</param>
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        if (update.Message is not Message message || string.IsNullOrEmpty(update.Message.Text)) return;
+        if (update.Message is not { } message || string.IsNullOrEmpty(update.Message.Text)) return;
         logger.LogDebug("Received message from {id}. Content: {text}", message.Chat.Id, message.Text);
 
         // Парсим команду и аргументы из сообщения

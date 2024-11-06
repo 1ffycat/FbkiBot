@@ -4,7 +4,6 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Telegram.Bot.Types;
 
 namespace FbkiBot.Models;
@@ -25,11 +26,13 @@ public class SavedMessage
     /// <summary>
     /// Username автора
     /// </summary>
+    [MaxLength(32)]
     public string? AddedByUsername { get; set; }
 
     /// <summary>
     /// Имя автора
     /// </summary>
+    [MaxLength(512)]
     public string AddedByName { get; set; }
 
     /// <summary>
@@ -40,6 +43,7 @@ public class SavedMessage
     /// <summary>
     /// Название сохраненного сообщения
     /// </summary>
+    [MaxLength(128)]
     public string Name { get; set; }
 
     /// <summary>
@@ -54,6 +58,8 @@ public class SavedMessage
     /// <param name="messageId">ID сохраняемого сообщения</param>
     /// <param name="chatId">ID чата, в котором сохраняем</param>
     /// <param name="addedById">ID пользователя который сохраняет сообщение</param>
+    /// <param name="addedByUsername">Username пользователя который сохраняет сообщение</param>
+    /// <param name="addedByName">Имя пользователя который сохраняет сообщение</param>
     public SavedMessage(string name, int messageId, long chatId, long addedById, string? addedByUsername, string addedByName)
     {
         Name = name;

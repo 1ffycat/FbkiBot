@@ -1,4 +1,5 @@
-﻿using Telegram.Bot.Types;
+﻿using System.ComponentModel.DataAnnotations;
+using Telegram.Bot.Types;
 
 namespace FbkiBot.Models;
 
@@ -26,6 +27,7 @@ public class UserMount
     /// <summary>
     /// Название монтирования
     /// </summary>
+    [MaxLength(64)]
     public string Name { get; set; }
 
 
@@ -34,7 +36,7 @@ public class UserMount
     /// </summary>
     /// <param name="name">Название монтирования</param>
     /// <param name="chatId">ID чата который примонтитровал пользователь</param>
-    /// <param name="UserId">ID пользователя</param>
+    /// <param name="userId">ID пользователя</param>
     public UserMount(string name, long chatId, long userId)
     {
         Name = name;
