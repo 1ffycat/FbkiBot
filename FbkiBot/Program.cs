@@ -27,8 +27,7 @@ builder.Services.AddDbContext<BotDbContext>(conf =>
 });
 
 // Добавляем сервисы в DI контейнер
-builder.Services.AddSingleton<IBotService, TelegramBotService>();
-builder.Services.AddHostedService<BotHostedService>();
+builder.Services.AddHostedService<TelegramBotService>();
 builder.Services.AddSingleton<CommandParserService>();
 
 // Добавляем команды в DI контейнер
@@ -44,7 +43,7 @@ builder.AddCommand<MountsCommand>();
 
 // Обходим круговую зависимость в HelpCommand. Костыли еще никогда не были так лаконичны
 builder.Services.AddTransient<Func<IEnumerable<IChatCommand>>>(sp =>
-    () => sp.GetServices<IChatCommand>());
+    sp.GetServices<IChatCommand>);
 
 // Собираем все что понадобавляли
 var app = builder.Build();

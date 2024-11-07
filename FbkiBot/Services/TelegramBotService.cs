@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -19,7 +20,7 @@ namespace FbkiBot.Services;
 /// <param name="serviceProvider">DI-провайдер сервисов</param>
 /// <param name="logger">Логгер для внутреннего использования</param>
 /// <param name="cmdParser">Парсер команд</param>
-public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IBotService
+public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IHostedService
 {
     private readonly TelegramBotClient _botClient = new(tgSettings.Value.BotToken);
 
@@ -41,6 +42,14 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
             cancellationToken
         );
         logger.LogInformation("Bot started receiving");
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        logger.LogInformation("The bot is shutting down");
+        return Task.CompletedTask;
+
+        // Telegram в режиме Polling не предполагает никакой финализации
     }
 
     /// <summary>
