@@ -18,9 +18,9 @@ builder.Configuration.AddDefaultsJsonFile("textconsts.json", optional: true);
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
 // Парсим настройки
-builder.AddSettings<TelegramSettings>("Telegram");
-builder.AddSettings<TextConstSettings>("TextConsts");
-builder.AddSettings<MessageSavingSettings>("MessageSaving");
+builder.Services.AddSettings<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
+builder.Services.AddSettings<TextConstSettings>(builder.Configuration.GetSection("TextConsts"));
+builder.Services.AddSettings<MessageSavingSettings>(builder.Configuration.GetSection("MessageSaving"));
 
 // Добавляем временную in-memory БД
 if (builder.Environment.IsDevelopment())
@@ -42,15 +42,15 @@ builder.Services.AddHostedService<TelegramBotService>();
 builder.Services.AddSingleton<CommandParserService>();
 
 // Добавляем команды в DI контейнер
-builder.AddCommand<StartCommand>();
-builder.AddCommand<HelpCommand>();
-builder.AddCommand<SaveCommand>();
-builder.AddCommand<CatCommand>();
-builder.AddCommand<RmCommand>();
-builder.AddCommand<LsCommand>();
-builder.AddCommand<MountCommand>();
-builder.AddCommand<UmountCommand>();
-builder.AddCommand<MountsCommand>();
+builder.Services.AddCommand<StartCommand>();
+builder.Services.AddCommand<HelpCommand>();
+builder.Services.AddCommand<SaveCommand>();
+builder.Services.AddCommand<CatCommand>();
+builder.Services.AddCommand<RmCommand>();
+builder.Services.AddCommand<LsCommand>();
+builder.Services.AddCommand<MountCommand>();
+builder.Services.AddCommand<UmountCommand>();
+builder.Services.AddCommand<MountsCommand>();
 
 // Обходим круговую зависимость в HelpCommand. Костыли еще никогда не были так лаконичны
 builder.Services.AddTransient<Func<IEnumerable<IChatCommand>>>(sp =>
