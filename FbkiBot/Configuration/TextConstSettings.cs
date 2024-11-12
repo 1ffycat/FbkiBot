@@ -104,4 +104,9 @@ public class TextConstSettings
     /// "Шапка" возвращаемого списка монтирований
     /// </summary>
     public required string MountsHeader { get; set; }
+
+    /// <summary>
+    /// Сообщение пользователю при возникновении необработанной ошибке во время обработки запроса
+    /// </summary>
+    public required string UnexpectedError { get; set; }
 }

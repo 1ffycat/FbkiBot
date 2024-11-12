@@ -19,6 +19,7 @@
         "UmountNotFoundMessage": "Монтирования с этим чатом нет",
         "UmountSuccessMessage": "Монтирование удалено",
         "MountsNoMounts": "У вас нет примонтированных чатов",
-        "MountsHeader": "Ваши примонтированные чаты:"
+        "MountsHeader": "Ваши примонтированные чаты:",
+        "UnexpectedError": "<b>Непредвиденная ошибка во время обработки запроса:</b>\n\n"
     }
 }
