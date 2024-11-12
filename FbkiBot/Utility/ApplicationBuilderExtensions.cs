@@ -1,4 +1,6 @@
 using FbkiBot.Commands;
+using FbkiBot.Middleware;
+using FbkiBot.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,4 +55,41 @@ public static class ApplicationBuilderExtensions
 
         return configuration;
     }
+
+    public static IHostApplicationBuilder AddMiddlewarePipeline(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddSingleton<BotMiddlewarePipeline>();
+
+        return builder;
+    }
+
+    public static IHost Use<T>(this IHost host) where T : IBotMiddleware, new()
+    {
+        var pipeline = host.Services.GetService<BotMiddlewarePipeline>();
+
+        if (pipeline is null) throw new NullReferenceException("Middleware pipeline is not found in the DI container.");
+
+        pipeline.Register(new T());
+
+        return host;
+    }
+
+    public static IHost Use(this IHost host, Func<UpdateContext, BotMiddlewareDelegate, Task> middleware)
+    {
+        var pipeline = host.Services.GetService<BotMiddlewarePipeline>();
+
+        if (pipeline is null) throw new NullReferenceException("Middleware pipeline is not found in the DI container.");
+
+        pipeline.Register(middleware);
+
+        return host;
+    }
+
+    public static IHost UseTextCommands(this IHost host) => host.Use<TextCommandExecuterMiddleware>();
+
+    public static IHost UseUpdateLogger(this IHost host) => host.Use<UpdateLoggerMiddleware>();
+
+    public static IHost UseErrorHandler(this IHost host) => host.Use<ErrorHandlerMiddleware>();
+
+    public static IHost UseRequestTimer(this IHost host) => host.Use<RequestTimerMiddleware>();
 }
