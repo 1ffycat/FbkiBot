@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Reflection;
+using FbkiBot.Middleware;
+using FbkiBot.Models;
 using Microsoft.Extensions.Hosting;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -19,10 +21,12 @@ namespace FbkiBot.Services;
 /// <param name="tgSettings">Специфичные для Telegram настройки (в т.ч. BotToken)</param>
 /// <param name="serviceProvider">DI-провайдер сервисов</param>
 /// <param name="logger">Логгер для внутреннего использования</param>
-/// <param name="cmdParser">Парсер команд</param>
-public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, CommandParserService cmdParser) : IHostedService
+/// <param name="pipeline">Pipeline для ПО промежуточного слоя</param>
+public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, BotMiddlewarePipeline pipeline) : IHostedService
 {
     private readonly TelegramBotClient _botClient = new(tgSettings.Value.BotToken);
+
+    private BotMiddlewareDelegate? _pipeline;
 
     /// <summary>
     /// Запустить обработку событий Telegram-бота
@@ -30,6 +34,8 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     /// <param name="cancellationToken">Токен для остановки действий</param>
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        _pipeline = pipeline.Build();
+
         // Объявляем Телеграму о всех доступных командах
         await SetBotCommandsAsync(cancellationToken);
 
@@ -61,7 +67,7 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     {
         logger.LogDebug("Evaluating all available commands and their descriptions");
 
-        using var scope = serviceProvider.CreateAsyncScope();
+        await using var scope = serviceProvider.CreateAsyncScope();
 
         var commands = scope.ServiceProvider.GetServices<IChatCommand>();
 
@@ -86,26 +92,31 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     /// <param name="botClient">Клиент Telegram-бота</param>
     /// <param name="update">Полученное событие</param>
     /// <param name="cancellationToken">Токен для отмены действий</param>
+    /// <exception cref="ArgumentNullException">Pipeline для ПО промежуточного слоя не был построен перед запуском бота</exception>
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        if (update.Message is not { } message || string.IsNullOrEmpty(update.Message.Text)) return;
-        logger.LogDebug("Received message from {id}. Content: {text}", message.Chat.Id, message.Text);
+        if (_pipeline is null) throw new NullReferenceException("Pipeline was not built.");
 
-        // Парсим команду и аргументы из сообщения
-        var context = cmdParser.BuildContext(message);
+        // Посылаем контекст события в первый middleware
+        await _pipeline(new UpdateContext(update, botClient, serviceProvider, cancellationToken));
 
-        using var scope = serviceProvider.CreateAsyncScope();  // FIXME: Где-то здесь создается новое подключение к БД при каждом сообщении - даже если не команда
-
-        var commands = scope.ServiceProvider.GetServices<IChatCommand>();
-
-        foreach (var command in commands)
-        {
-            if (command.CanExecute(context))
-            {
-                await command.ExecuteAsync(botClient, context, cancellationToken);
-                break;
-            }
-        }
+        // logger.LogDebug("Received message from {id}. Content: {text}", message.Chat.Id, message.Text);
+        //
+        // // Парсим команду и аргументы из сообщения
+        // var context = cmdParser.BuildContext(message);
+        //
+        // using var scope = serviceProvider.CreateAsyncScope();  // FIXME: Где-то здесь создается новое подключение к БД при каждом сообщении - даже если не команда
+        //
+        // var commands = scope.ServiceProvider.GetServices<IChatCommand>();
+        //
+        // foreach (var command in commands)
+        // {
+        //     if (command.CanExecute(context))
+        //     {
+        //         await command.ExecuteAsync(botClient, context, cancellationToken);
+        //         break;
+        //     }
+        // }
     }
 
     /// <summary>
