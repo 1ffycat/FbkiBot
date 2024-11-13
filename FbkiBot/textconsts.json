@@ -1,25 +1,25 @@
 {
-    "TextConsts": {
-        "WelcomeMessage": "Бот для сохранения сообщений группы 14221 ФБКИ ИГУ.",
-        "SaveNoNameProvidedMessage": "Не задано название для сохраненного сообщения",
-        "SaveNoReplyMessage": "Не выбрано сообщение для сохранения. Используйте функцию ответов в Telegram",
-        "SaveMessageSavedMessage": "Сообщение сохранено",
-        "SaveNameTakenMessage": "Сообщение с таким названием уже существует в этом чате (оно отмечено в ответе)",
-        "CatNotFoundMessage": "Сообщения с таким названием не найдено",
-        "CatFoundMessage": "Вот ваше сообщение",
-        "RmNotAuthorMessage": "Это сообщение может удалить только его автор",
-        "RmSuccessMessage": "Сообщение удалено",
-        "LsSuccessMessage": "Сообщения в данной категории:",
-        "LsNoSavedMessages": "Сообщения не найдены",
-        "MountIsPersonalChatMessage": "Команда вызвана из личного чата пользователя",
-        "MountNoNameMessage": "Монтированию не дано название",
-        "MountNameTakenMessage": "Монтирование с таким названием уже существует",
-        "MountIsExistsMessage": "Монтирование с этим чатом уже существует",
-        "MountSuccessMessage": "Монтирование успешно произведено",
-        "UmountNotFoundMessage": "Монтирования с этим чатом нет",
-        "UmountSuccessMessage": "Монтирование удалено",
-        "MountsNoMounts": "У вас нет примонтированных чатов",
-        "MountsHeader": "Ваши примонтированные чаты:",
-        "UnexpectedError": "<b>Непредвиденная ошибка во время обработки запроса:</b>\n\n"
-    }
+  "TextConsts": {
+    "WelcomeMessage": "Бот для сохранения сообщений группы 14221 ФБКИ ИГУ.",
+    "SaveNoNameProvidedMessage": "Не задано название для сохраненного сообщения",
+    "SaveNoReplyMessage": "Не выбрано сообщение для сохранения. Используйте функцию ответов в Telegram",
+    "SaveMessageSavedMessage": "Сообщение сохранено",
+    "SaveNameTakenMessage": "Сообщение с таким названием уже существует в этом чате (оно отмечено в ответе)",
+    "CatNotFoundMessage": "Сообщения с таким названием не найдено",
+    "CatFoundMessage": "Вот ваше сообщение",
+    "RmNotAuthorMessage": "Это сообщение может удалить только его автор",
+    "RmSuccessMessage": "Сообщение удалено",
+    "LsSuccessMessage": "Сообщения в данной категории:",
+    "LsNoSavedMessages": "Сообщения не найдены",
+    "MountIsPersonalChatMessage": "Команда вызвана из личного чата пользователя",
+    "MountNoNameMessage": "Монтированию не дано название",
+    "MountNameTakenMessage": "Монтирование с таким названием уже существует",
+    "MountIsExistsMessage": "Монтирование с этим чатом уже существует",
+    "MountSuccessMessage": "Монтирование успешно произведено",
+    "UmountNotFoundMessage": "Монтирования с этим чатом нет",
+    "UmountSuccessMessage": "Монтирование удалено",
+    "MountsNoMounts": "У вас нет примонтированных чатов",
+    "MountsHeader": "Ваши примонтированные чаты:",
+    "UnexpectedError": "<b>Непредвиденная ошибка во время обработки запроса:</b>\n\n"
+  }
 }

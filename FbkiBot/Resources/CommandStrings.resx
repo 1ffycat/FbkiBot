@@ -1,0 +1,86 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+                xmlns="">
+        <xsd:element name="root" msdata:IsDataSet="true">
+
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="Cat.Found" xml:space="preserve">
+        <value>Ваше сообщение:</value>
+    </data>
+    <data name="SavedMessageNotFound" xml:space="preserve">
+        <value>Сохраненного сообщения с таким названием не найдено</value>
+    </data>
+    <data name="Ls.Empty" xml:space="preserve">
+        <value>Сообщения не найдены</value>
+    </data>
+    <data name="Ls.Success" xml:space="preserve">
+        <value>Сообщения в данной категории:</value>
+    </data>
+    <data name="Mount.AlreadyExists" xml:space="preserve">
+        <value>Монтирование с этим чатом уже существует</value>
+    </data>
+    <data name="Mount.IsPersonalChat" xml:space="preserve">
+        <value>Команда вызвана из личного чата пользователя</value>
+    </data>
+    <data name="Mount.NameTaken" xml:space="preserve">
+        <value>Монтирование с таким названием уже существует</value>
+    </data>
+    <data name="Mount.NoName" xml:space="preserve">
+        <value>Не передано название монтирования</value>
+    </data>
+    <data name="Mount.Success" xml:space="preserve">
+        <value>Монтирование успешно произведено</value>
+    </data>
+    <data name="Mounts.Empty" xml:space="preserve">
+        <value>У вас нет примонтированных чатов</value>
+    </data>
+    <data name="Mounts.Header" xml:space="preserve">
+        <value>Ваши примонтированные чаты:</value>
+    </data>
+    <data name="Rm.NotAuthor" xml:space="preserve">
+        <value>Это сообщение может удалить только его автор</value>
+    </data>
+    <data name="Rm.Success" xml:space="preserve">
+        <value>Сообщение удалено</value>
+    </data>
+    <data name="Save.Success" xml:space="preserve">
+        <value>Сообщение сохранено</value>
+    </data>
+    <data name="Save.NameTaken" xml:space="preserve">
+        <value>Сообщение с таким названием уже существует в этом чате (оно отмечено в ответе)</value>
+    </data>
+    <data name="Save.NoReply" xml:space="preserve">
+        <value>Не выбрано сообщение для сохранения. Используйте функцию ответов в Telegram</value>
+    </data>
+    <data name="Start.Welcome" xml:space="preserve">
+        <value>Бот для сохранения сообщений группы 14221 </value>
+    </data>
+    <data name="Umount.NotFound" xml:space="preserve">
+        <value>Монтирования с этим чатом нет</value>
+    </data>
+    <data name="Umount.Success" xml:space="preserve">
+        <value>Монтирование удалено</value>
+    </data>
+    <data name="NoSavedMessageNameProvided" xml:space="preserve">
+        <value>Не передано название сохраненного сообщения</value>
+    </data>
+</root>

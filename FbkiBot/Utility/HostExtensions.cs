@@ -8,11 +8,14 @@ namespace FbkiBot.Utility;
 public static class HostExtensions
 {
     /// <summary>
-    /// Использовать типизированный middleware
+    ///     Использовать типизированный middleware
     /// </summary>
     /// <param name="host">Приложение</param>
     /// <typeparam name="T">Тип middleware</typeparam>
-    /// <exception cref="NullReferenceException">Пайплайн middleware не был добавлен в DI перед добавлением ПО промежуточного слоя</exception>
+    /// <exception cref="NullReferenceException">
+    ///     Пайплайн middleware не был добавлен в DI перед добавлением ПО промежуточного
+    ///     слоя
+    /// </exception>
     public static IHost Use<T>(this IHost host) where T : IBotMiddleware, new()
     {
         var pipeline = host.Services.GetService<BotMiddlewarePipeline>();
@@ -25,11 +28,14 @@ public static class HostExtensions
     }
 
     /// <summary>
-    /// Использовать анонимный middleware
+    ///     Использовать анонимный middleware
     /// </summary>
     /// <param name="host">Приложение</param>
     /// <param name="middleware">Обработчик middleware</param>
-    /// <exception cref="NullReferenceException">Пайплайн middleware не был добавлен в DI перед добавлением ПО промежуточного слоя</exception>
+    /// <exception cref="NullReferenceException">
+    ///     Пайплайн middleware не был добавлен в DI перед добавлением ПО промежуточного
+    ///     слоя
+    /// </exception>
     public static IHost Use(this IHost host, Func<UpdateContext, BotMiddlewareDelegate, Task> middleware)
     {
         var pipeline = host.Services.GetService<BotMiddlewarePipeline>();
@@ -42,27 +48,39 @@ public static class HostExtensions
     }
 
     /// <summary>
-    /// Использовать обработчик текстовых команд в приложении
+    ///     Использовать обработчик текстовых команд в приложении
     /// </summary>
     /// <param name="host">Приложение</param>
-    public static IHost UseTextCommands(this IHost host) => host.Use<TextCommandExecuterMiddleware>();
+    public static IHost UseTextCommands(this IHost host)
+    {
+        return host.Use<TextCommandExecuterMiddleware>();
+    }
 
     /// <summary>
-    /// Использовать логгирование событий Telegram-бота в приложении
+    ///     Использовать логгирование событий Telegram-бота в приложении
     /// </summary>
     /// <param name="host">Приложение</param>
-    public static IHost UseUpdateLogger(this IHost host) => host.Use<UpdateLoggerMiddleware>();
+    public static IHost UseUpdateLogger(this IHost host)
+    {
+        return host.Use<UpdateLoggerMiddleware>();
+    }
 
     /// <summary>
-    /// Использовать обработчик ошибок в приложении
+    ///     Использовать обработчик ошибок в приложении
     /// </summary>
     /// <param name="host">Приложение</param>
     /// <returns></returns>
-    public static IHost UseErrorHandler(this IHost host) => host.Use<ErrorHandlerMiddleware>();
+    public static IHost UseErrorHandler(this IHost host)
+    {
+        return host.Use<ErrorHandlerMiddleware>();
+    }
 
     /// <summary>
-    /// Использовать таймер времени обработки обновления в приложении
+    ///     Использовать таймер времени обработки обновления в приложении
     /// </summary>
     /// <param name="host">Приложение</param>
-    public static IHost UseRequestTimer(this IHost host) => host.Use<RequestTimerMiddleware>();
+    public static IHost UseRequestTimer(this IHost host)
+    {
+        return host.Use<RequestTimerMiddleware>();
+    }
 }

@@ -3,12 +3,12 @@
 namespace FbkiBot.Middleware;
 
 /// <summary>
-/// ПО промежуточного слоя для обработки событий бота
+///     ПО промежуточного слоя для обработки событий бота
 /// </summary>
 public interface IBotMiddleware
 {
     /// <summary>
-    /// Выполнить обработку и, опционально, продолжить выполнение пайплайна
+    ///     Выполнить обработку и, опционально, продолжить выполнение пайплайна
     /// </summary>
     /// <param name="context">Контекст события</param>
     /// <param name="next">Следующий middleware</param>
@@ -16,6 +16,6 @@ public interface IBotMiddleware
 }
 
 /// <summary>
-/// Делегат вызова middleware
+///     Делегат вызова middleware
 /// </summary>
 public delegate Task BotMiddlewareDelegate(UpdateContext context);

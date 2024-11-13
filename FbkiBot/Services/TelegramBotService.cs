@@ -1,13 +1,13 @@
+using System.Reflection;
 using FbkiBot.Attributes;
 using FbkiBot.Commands;
 using FbkiBot.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System.Reflection;
 using FbkiBot.Middleware;
 using FbkiBot.Models;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
@@ -16,20 +16,24 @@ using Telegram.Bot.Types;
 namespace FbkiBot.Services;
 
 /// <summary>
-/// Сервис Telegram-бота
+///     Сервис Telegram-бота
 /// </summary>
 /// <param name="tgSettings">Специфичные для Telegram настройки (в т.ч. BotToken)</param>
 /// <param name="serviceProvider">DI-провайдер сервисов</param>
 /// <param name="logger">Логгер для внутреннего использования</param>
 /// <param name="pipeline">Pipeline для ПО промежуточного слоя</param>
-public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceProvider serviceProvider, ILogger<TelegramBotService> logger, BotMiddlewarePipeline pipeline) : IHostedService
+public class TelegramBotService(
+    IOptions<TelegramSettings> tgSettings,
+    IServiceProvider serviceProvider,
+    ILogger<TelegramBotService> logger,
+    BotMiddlewarePipeline pipeline) : IHostedService
 {
     private readonly TelegramBotClient _botClient = new(tgSettings.Value.BotToken);
 
     private BotMiddlewareDelegate? _pipeline;
 
     /// <summary>
-    /// Запустить обработку событий Telegram-бота
+    ///     Запустить обработку событий Telegram-бота
     /// </summary>
     /// <param name="cancellationToken">Токен для остановки действий</param>
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -59,7 +63,7 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     }
 
     /// <summary>
-    /// Добавить все команды с атрибутом BotCommand в список команд бота в Telegram.
+    ///     Добавить все команды с атрибутом BotCommand в список команд бота в Telegram.
     /// </summary>
     /// <param name="cancellationToken">Токен для отмены</param>
     /// <returns></returns>
@@ -73,7 +77,7 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
 
         var botCommands = commands.Select(c => c.GetType().GetCustomAttribute<BotCommandAttribute>())
             .Where(c => c is not null)
-            .Select(c => new BotCommand()
+            .Select(c => new BotCommand
             {
                 Command = c!.Name,
                 Description = $"{c.Description} {(c.Usage is null ? "" : $"({c.Usage})")}"
@@ -87,13 +91,14 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     }
 
     /// <summary>
-    /// Обработать полученное ботом событие
+    ///     Обработать полученное ботом событие
     /// </summary>
     /// <param name="botClient">Клиент Telegram-бота</param>
     /// <param name="update">Полученное событие</param>
     /// <param name="cancellationToken">Токен для отмены действий</param>
     /// <exception cref="ArgumentNullException">Pipeline для ПО промежуточного слоя не был построен перед запуском бота</exception>
-    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+        CancellationToken cancellationToken)
     {
         if (_pipeline is null) throw new NullReferenceException("Pipeline was not built.");
 
@@ -120,16 +125,18 @@ public class TelegramBotService(IOptions<TelegramSettings> tgSettings, IServiceP
     }
 
     /// <summary>
-    /// Обрабатывает произошедшую в боте ошибку. Логгирует событие и продолжает выполнение.
+    ///     Обрабатывает произошедшую в боте ошибку. Логгирует событие и продолжает выполнение.
     /// </summary>
     /// <param name="botClient">Клиент Telegram-бота</param>
     /// <param name="exception">Данные о произошедшей ошибке</param>
     /// <param name="cancellationToken">Токен для отмены действий</param>
-    private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+    private Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+        CancellationToken cancellationToken)
     {
         var errorMessage = exception switch
         {
-            ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+            ApiRequestException apiRequestException =>
+                $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
             _ => exception.ToString()
         };
 

@@ -7,7 +7,7 @@ namespace FbkiBot.Utility;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Зарегистрировать команду в чатботе
+    ///     Зарегистрировать команду в чатботе
     /// </summary>
     /// <typeparam name="T">Тип команды</typeparam>
     /// <param name="services">Коллекция сервисов приложения</param>
@@ -20,13 +20,14 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Добавить настройки для парсинга
+    ///     Добавить настройки для парсинга
     /// </summary>
     /// <typeparam name="T">Тип модели настроек</typeparam>
     /// <param name="services">Сервисы приложения</param>
     /// <param name="section">Секция настроек, к которой нужно привязать класс</param>
     /// <returns>Сервисы приложения с добавленными настройками</returns>
-    public static IServiceCollection AddSettings<T>(this IServiceCollection services, IConfigurationSection section) where T : class
+    public static IServiceCollection AddSettings<T>(this IServiceCollection services, IConfigurationSection section)
+        where T : class
     {
         services.Configure<T>(section);
 

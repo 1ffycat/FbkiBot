@@ -9,7 +9,7 @@ public class CommandParserServiceTest
     public void CanParseNonCommandMessage()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "Hello, World!" };
+        var message = new Message { Text = "Hello, World!" };
 
         var context = parser.BuildContext(message);
 
@@ -21,7 +21,7 @@ public class CommandParserServiceTest
     public void CanParseSlashCommandMessageNoArgs()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "/start" };
+        var message = new Message { Text = "/start" };
 
         var context = parser.BuildContext(message);
 
@@ -33,7 +33,7 @@ public class CommandParserServiceTest
     public void CanParseSlashCommandMessageArgs()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "/echo Hello, World!" };
+        var message = new Message { Text = "/echo Hello, World!" };
 
         var context = parser.BuildContext(message);
 
@@ -45,7 +45,7 @@ public class CommandParserServiceTest
     public void CanParseEmptyMessage()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "" };
+        var message = new Message { Text = "" };
 
         var context = parser.BuildContext(message);
 
@@ -57,7 +57,7 @@ public class CommandParserServiceTest
     public void CanParseCyrillicNonCommandMessage()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "Привет, мир!" };
+        var message = new Message { Text = "Привет, мир!" };
 
         var context = parser.BuildContext(message);
 
@@ -69,7 +69,7 @@ public class CommandParserServiceTest
     public void CanParseCyrillicSlashCommandMessage()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "/привет мир" };
+        var message = new Message { Text = "/привет мир" };
 
         var context = parser.BuildContext(message);
 
@@ -81,7 +81,7 @@ public class CommandParserServiceTest
     public void RemovesEmptyArgumentsFromMessagesWithDoubleSpaces()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "/echo  test" };
+        var message = new Message { Text = "/echo  test" };
 
         var context = parser.BuildContext(message);
 
@@ -93,7 +93,7 @@ public class CommandParserServiceTest
     public void TrimsOffPartAfterAtSign()
     {
         var parser = new CommandParserService();
-        var message = new Message() { Text = "/echo@test args" };
+        var message = new Message { Text = "/echo@test args" };
 
         var context = parser.BuildContext(message);
 

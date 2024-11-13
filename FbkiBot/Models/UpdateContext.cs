@@ -4,7 +4,7 @@ using Telegram.Bot.Types;
 namespace FbkiBot.Models;
 
 /// <summary>
-/// Контекст события Telegram бота
+///     Контекст события Telegram бота
 /// </summary>
 /// <param name="update">Само событие</param>
 /// <param name="client">Клиент Telegram-бота</param>
@@ -13,22 +13,22 @@ namespace FbkiBot.Models;
 public class UpdateContext(Update update, ITelegramBotClient client, IServiceProvider services, CancellationToken ct)
 {
     /// <summary>
-    /// Событие Telegram-бота
+    ///     Событие Telegram-бота
     /// </summary>
     public Update Update { get; set; } = update;
 
     /// <summary>
-    /// Клиент Telegram-бота, из которого получено событие
+    ///     Клиент Telegram-бота, из которого получено событие
     /// </summary>
     public ITelegramBotClient Client { get; set; } = client;
 
     /// <summary>
-    /// Провайдер сервисов приложения
+    ///     Провайдер сервисов приложения
     /// </summary>
     public IServiceProvider Services { get; set; } = services;
 
     /// <summary>
-    /// Токен для отмены выполнения
+    ///     Токен для отмены выполнения
     /// </summary>
     public CancellationToken CancellationToken { get; set; } = ct;
 }
