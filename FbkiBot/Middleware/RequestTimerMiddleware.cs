@@ -6,12 +6,12 @@ using Microsoft.Extensions.Logging;
 namespace FbkiBot.Middleware;
 
 /// <summary>
-/// ПО промежуточного слоя, замеряющее время обработки запросов
+///     ПО промежуточного слоя, замеряющее время обработки запросов
 /// </summary>
 public class RequestTimerMiddleware : IBotMiddleware
 {
     /// <summary>
-    /// Замерить и залоггировать время обработки запроса
+    ///     Замерить и залоггировать время обработки запроса
     /// </summary>
     public async Task InvokeAsync(UpdateContext context, BotMiddlewareDelegate next)
     {

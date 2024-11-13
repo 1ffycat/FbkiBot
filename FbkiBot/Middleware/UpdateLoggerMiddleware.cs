@@ -5,12 +5,12 @@ using Microsoft.Extensions.Logging;
 namespace FbkiBot.Middleware;
 
 /// <summary>
-/// ПО промежуточного слоя для логгирования полученных ботом событий
+///     ПО промежуточного слоя для логгирования полученных ботом событий
 /// </summary>
 public class UpdateLoggerMiddleware : IBotMiddleware
 {
     /// <summary>
-    /// Логгирует событие и продолжает выполнение пайплайна
+    ///     Логгирует событие и продолжает выполнение пайплайна
     /// </summary>
     /// <param name="context">Контекст события</param>
     /// <param name="next">Следующий middleware</param>

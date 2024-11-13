@@ -1,10 +1,8 @@
 using FbkiBot.Commands;
-using FbkiBot.Resources;
 using FbkiBot.Data;
 using FbkiBot.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -18,10 +16,17 @@ public class SaveCommandTest
         return new BotDbContext(new DbContextOptionsBuilder<BotDbContext>().UseInMemoryDatabase("test-db").Options);
     }
 
-    private (BotDbContext db, ILogger<SaveCommand> logger, CommandContext context, ITelegramBotClient botClient) BuildEnvironment(string command, string[] args)
+    private (BotDbContext db, ILogger<SaveCommand> logger, CommandContext context, ITelegramBotClient botClient)
+        BuildEnvironment(string command, string[] args)
     {
         string[] tokens = [command, .. args];
-        var msg = new Message() { Text = string.Join(' ', tokens), ReplyToMessage = new Message() { MessageId = 0 }, From = new() { Id = 1, FirstName = "A", LastName = "B", Username = "C" }, Chat = new() { Id = 2 } };
+        var msg = new Message
+        {
+            Text = string.Join(' ', tokens),
+            ReplyToMessage = new Message { MessageId = 0 },
+            From = new User { Id = 1, FirstName = "A", LastName = "B", Username = "C" },
+            Chat = new Chat { Id = 2 }
+        };
         var ctx = new CommandContext(msg, command, args);
 
         return (MakeInMemoryDb(), Substitute.For<ILogger<SaveCommand>>(), ctx, Substitute.For<ITelegramBotClient>());
@@ -73,7 +78,7 @@ public class SaveCommandTest
     {
         var env = BuildEnvironment("/save", ["test"]);
         var command = new SaveCommand(env.db, env.logger);
-        await env.db.SavedMessages.AddAsync(new SavedMessage("test", 69, 1337, new()));
+        await env.db.SavedMessages.AddAsync(new SavedMessage("test", 69, 1337, new User()));
         await env.db.SaveChangesAsync();
 
         await command.ExecuteAsync(env.botClient, env.context, CancellationToken.None);

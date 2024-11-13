@@ -4,19 +4,19 @@ using Telegram.Bot;
 namespace FbkiBot.Commands;
 
 /// <summary>
-/// Команда, обрабатываемая чатботом
+///     Команда, обрабатываемая чатботом
 /// </summary>
 public interface IChatCommand
 {
     /// <summary>
-    /// Стоит ли обрабатывать команду при данном сообщении
+    ///     Стоит ли обрабатывать команду при данном сообщении
     /// </summary>
     /// <param name="context">Контекст команды</param>
     /// <returns>true если сообщение стоит обработать, иначе false</returns>
     bool CanExecute(CommandContext context);
 
     /// <summary>
-    /// Выполнить команду
+    ///     Выполнить команду
     /// </summary>
     /// <param name="botClient">Клиент Telegram-бота</param>
     /// <param name="context">Контекст команды</param>

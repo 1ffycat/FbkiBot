@@ -4,35 +4,12 @@ using Telegram.Bot.Types;
 namespace FbkiBot.Models;
 
 /// <summary>
-/// Монтирование групповых чатов в личную переписку с ботом
+///     Монтирование групповых чатов в личную переписку с ботом
 /// </summary>
 public class UserMount
 {
     /// <summary>
-    /// ID в БД
-    /// </summary>
-    public Guid Id { get; set; }
-
-    /// <summary>
-    /// ID пользователя который монтирует чат
-    /// </summary>
-    public long UserId { get; set; }
-
-
-    /// <summary>
-    /// ID чата который монтируется
-    /// </summary>
-    public long ChatId { get; set; }
-
-    /// <summary>
-    /// Название монтирования
-    /// </summary>
-    [MaxLength(64)]
-    public string Name { get; set; }
-
-
-    /// <summary>
-    /// Создать модель сохраненного сообщения
+    ///     Создать модель сохраненного сообщения
     /// </summary>
     /// <param name="name">Название монтирования</param>
     /// <param name="chatId">ID чата который примонтитровал пользователь</param>
@@ -44,5 +21,29 @@ public class UserMount
         UserId = userId;
     }
 
-    public UserMount(string name, long chatId, User user) : this(name, chatId, user.Id) { }
+    public UserMount(string name, long chatId, User user) : this(name, chatId, user.Id)
+    {
+    }
+
+    /// <summary>
+    ///     ID в БД
+    /// </summary>
+    public Guid Id { get; set; }
+
+    /// <summary>
+    ///     ID пользователя который монтирует чат
+    /// </summary>
+    public long UserId { get; set; }
+
+
+    /// <summary>
+    ///     ID чата который монтируется
+    /// </summary>
+    public long ChatId { get; set; }
+
+    /// <summary>
+    ///     Название монтирования
+    /// </summary>
+    [MaxLength(64)]
+    public string Name { get; set; }
 }

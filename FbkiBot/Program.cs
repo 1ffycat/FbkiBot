@@ -22,16 +22,15 @@ builder.Services.AddSettings<MessageSavingSettings>(builder.Configuration.GetSec
 
 // Добавляем временную in-memory БД
 if (builder.Environment.IsDevelopment())
-    builder.Services.AddDbContext<BotDbContext>(conf =>
-        {
-            conf.UseInMemoryDatabase("tmpdb");
-        }, ServiceLifetime.Singleton  // Добавляем как singleton для сохранения данных в БД между запросами
+    builder.Services.AddDbContext<BotDbContext>(conf => { conf.UseInMemoryDatabase("tmpdb"); },
+        ServiceLifetime.Singleton // Добавляем как singleton для сохранения данных в БД между запросами
     );
 // Добавляем постоянную PostgreSQL БД
-else builder.Services.AddDbContext<BotDbContext>(conf =>
-{
-    conf.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
-});
+else
+    builder.Services.AddDbContext<BotDbContext>(conf =>
+    {
+        conf.UseNpgsql(builder.Configuration.GetConnectionString("Postgres"));
+    });
 
 builder.AddMiddlewarePipeline();
 
@@ -58,10 +57,10 @@ builder.Services.AddTransient<Func<IEnumerable<IChatCommand>>>(sp =>
 var app = builder.Build();
 
 // Добавляем ПО промежуточного слоя
-app.UseErrorHandler();  // Обработчик ошибок
-app.UseUpdateLogger();  // Логгирование полученных событий
-if (builder.Environment.IsDevelopment()) app.UseRequestTimer();  // Замер времени обработки запроса
-app.UseTextCommands();  // Обработчик текстовых команд
+app.UseErrorHandler(); // Обработчик ошибок
+app.UseUpdateLogger(); // Логгирование полученных событий
+if (builder.Environment.IsDevelopment()) app.UseRequestTimer(); // Замер времени обработки запроса
+app.UseTextCommands(); // Обработчик текстовых команд
 
 // Пример анонимного ПО промежуточного слоя - повторяет все полученные стикеры в чате
 app.Use(async (context, next) =>

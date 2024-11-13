@@ -10,11 +10,16 @@ using Telegram.Bot;
 namespace FbkiBot.Commands;
 
 [BotCommand("/rm", "Удаляет сохраненное сообщение", "/rm <название>")]
-public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmCommand> logger, BotDbContext db) : IChatCommand
+public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmCommand> logger, BotDbContext db)
+    : IChatCommand
 {
-    public bool CanExecute(CommandContext context) => context.Command?.Equals("/rm", StringComparison.OrdinalIgnoreCase) ?? false;
+    public bool CanExecute(CommandContext context)
+    {
+        return context.Command?.Equals("/rm", StringComparison.OrdinalIgnoreCase) ?? false;
+    }
 
-    public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context, CancellationToken cancellationToken)
+    public async Task ExecuteAsync(ITelegramBotClient botClient, CommandContext context,
+        CancellationToken cancellationToken)
     {
         logger.LogDebug("Processing rm");
 
@@ -22,17 +27,19 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
         if (context.Argument is null)
         {
             logger.LogDebug("/rm denied - no name provided");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
+                cancellationToken: cancellationToken);
             return;
         }
 
-        var messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken: cancellationToken);
+        var messageFound = await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken);
 
         // Если сообщение с таким названием не найдено
         if (messageFound is null)
         {
             logger.LogDebug("/rm denied - no message found with such name");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.SavedMessageNotFound, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.SavedMessageNotFound,
+                cancellationToken: cancellationToken);
             return;
         }
 
@@ -40,16 +47,18 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
         if (saveSettings.Value.CanOnlyBeRemovedByAuthor && messageFound.AddedById != context.Message.From?.Id)
         {
             logger.LogDebug("/rm denied - not an author");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Rm_NotAuthor, replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Rm_NotAuthor,
+                replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
             return;
         }
 
         // Удаляем сообщение и сохраняем изменения в БД
         db.SavedMessages.Remove(messageFound);
-        await db.SaveChangesAsync(cancellationToken: cancellationToken);
+        await db.SaveChangesAsync(cancellationToken);
 
         logger.LogDebug("Saved message removed");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Rm_Success, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Rm_Success,
+            cancellationToken: cancellationToken);
     }
 }

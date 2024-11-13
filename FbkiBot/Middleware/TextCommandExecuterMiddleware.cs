@@ -7,12 +7,12 @@ using Microsoft.Extensions.Logging;
 namespace FbkiBot.Middleware;
 
 /// <summary>
-/// ПО промежуточного слоя, находящее и выполняющее подходящие текстовые команды
+///     ПО промежуточного слоя, находящее и выполняющее подходящие текстовые команды
 /// </summary>
 public class TextCommandExecuterMiddleware : IBotMiddleware
 {
     /// <summary>
-    /// Найти и выполнить все подходящие текстовые команды
+    ///     Найти и выполнить все подходящие текстовые команды
     /// </summary>
     public async Task InvokeAsync(UpdateContext context, BotMiddlewareDelegate next)
     {
