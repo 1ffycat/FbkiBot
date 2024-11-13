@@ -25,7 +25,30 @@
 
   <ItemGroup>
    <None Include="appsettings.json" CopyToPublishDirectory="Always" />
-   <None Include="textconsts.json" CopyToPublishDirectory="Always" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CommandStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CommandStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\SystemStrings.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>SystemStrings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources\CommandStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CommandStrings.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Resources\SystemStrings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>SystemStrings.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

@@ -2,6 +2,7 @@ using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
+using FbkiBot.Resources;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
@@ -9,7 +10,7 @@ using Telegram.Bot;
 namespace FbkiBot.Commands;
 
 [BotCommand("/umount", "Отвязывает сохранения из этого чата от личной переписки с ботом")]
-public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
+public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger) : IChatCommand
 {
     public bool CanExecute(CommandContext context) => context.Command?.Equals("/umount", StringComparison.OrdinalIgnoreCase) ?? false;
 
@@ -23,7 +24,7 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOpti
         // Если такое монтирование не найдено - сообщаем об этом пользователю 
         if (mount is null)
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.UmountNotFoundMessage, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Umount_NotFound, cancellationToken: cancellationToken);
             return;
         }
 
@@ -32,6 +33,6 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger, IOpti
         await db.SaveChangesAsync(cancellationToken: cancellationToken);
 
         logger.LogDebug("/umount - success");
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.UmountSuccessMessage, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Umount_Success, cancellationToken: cancellationToken);
     }
 }

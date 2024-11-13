@@ -7,13 +7,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
 using System.Web;
+using FbkiBot.Resources;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 
 namespace FbkiBot.Commands;
 
 [BotCommand("/ls", "Показывает список сохраненных сообщений в категории", "/ls <категория>")]
-public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<TextConstSettings> textConsts) : IChatCommand
+public class LsCommand(ILogger<LsCommand> logger, BotDbContext db) : IChatCommand
 {
     public bool CanExecute(CommandContext context) => context.Command?.Equals("/ls", StringComparison.OrdinalIgnoreCase) ?? false;
 
@@ -58,7 +59,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         if (foundMessages.Count == 0)
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.LsNoSavedMessages, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Ls_Empty, cancellationToken: cancellationToken);
             return;
         }
 
@@ -84,6 +85,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db, IOptions<Text
 
         logger.LogDebug("/ls - success {}", msgBuilder.ToString());
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{textConsts.Value.LsSuccessMessage}\n{msgBuilder}", parseMode: ParseMode.Html, cancellationToken: cancellationToken);
+        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{CommandStrings.Ls_Success}\n{msgBuilder}", parseMode: ParseMode.Html, cancellationToken: cancellationToken);
     }
 }

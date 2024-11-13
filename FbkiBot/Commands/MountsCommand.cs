@@ -4,6 +4,7 @@ using FbkiBot.Attributes;
 using FbkiBot.Configuration;
 using FbkiBot.Data;
 using FbkiBot.Models;
+using FbkiBot.Resources;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -13,7 +14,7 @@ using Telegram.Bot.Types.Enums;
 namespace FbkiBot.Commands;
 
 [BotCommand("/mounts", "Показывает список всех примонтированных чатов")]
-public class MountsCommand(BotDbContext db, ILogger<MountsCommand> logger, IOptions<TextConstSettings> textConsts) : IChatCommand
+public class MountsCommand(BotDbContext db, ILogger<MountsCommand> logger) : IChatCommand
 {
     public bool CanExecute(CommandContext context) => context.Command?.Equals("/mounts", StringComparison.OrdinalIgnoreCase) ?? false;
 
@@ -29,14 +30,14 @@ public class MountsCommand(BotDbContext db, ILogger<MountsCommand> logger, IOpti
         {
             logger.LogDebug("Found no mounts for user");
 
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, textConsts.Value.MountsNoMounts, cancellationToken: cancellationToken);
+            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Mounts_Empty, cancellationToken: cancellationToken);
             return;
         }
 
         logger.LogDebug("Found {count} mounts for user", mounts.Count);
 
         // Собираем все найденные монтирования в красивый вывод:
-        var sb = new StringBuilder(textConsts.Value.MountsHeader);
+        var sb = new StringBuilder(CommandStrings.Mounts_Header);
         sb.AppendLine();
         sb.AppendLine();
 

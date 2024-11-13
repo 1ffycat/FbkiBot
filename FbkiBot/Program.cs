@@ -13,13 +13,11 @@ using Telegram.Bot.Types;
 
 var builder = Host.CreateApplicationBuilder(args);
 
-// Добавляем файл с текстовыми константами
-builder.Configuration.AddDefaultsJsonFile("textconsts.json", optional: true);
+// Добавляем пользовательские секреты
 builder.Configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true);
 
 // Парсим настройки
 builder.Services.AddSettings<TelegramSettings>(builder.Configuration.GetSection("Telegram"));
-builder.Services.AddSettings<TextConstSettings>(builder.Configuration.GetSection("TextConsts"));
 builder.Services.AddSettings<MessageSavingSettings>(builder.Configuration.GetSection("MessageSaving"));
 
 // Добавляем временную in-memory БД

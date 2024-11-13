@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using FbkiBot.Configuration;
 using FbkiBot.Models;
+using FbkiBot.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,7 +20,6 @@ public class ErrorHandlerMiddleware : IBotMiddleware
     public async Task InvokeAsync(UpdateContext context, BotMiddlewareDelegate next)
     {
         var config = context.Services.GetRequiredService<IConfiguration>();
-        var textConsts = context.Services.GetRequiredService<IOptions<TextConstSettings>>().Value;
 
         try
         {
@@ -31,7 +31,7 @@ public class ErrorHandlerMiddleware : IBotMiddleware
 
             var sb = new StringBuilder();
 
-            sb.Append(textConsts.UnexpectedError);
+            sb.Append(SystemStrings.ErrorHandling_UnexpectedError);
 
             sb.Append(config.GetValue<bool>("ErrorHandling:SendTraces")
                 ? ex.ToString()  // Вся ошибка, включая execution trace

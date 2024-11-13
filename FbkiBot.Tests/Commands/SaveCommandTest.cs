@@ -1,5 +1,5 @@
 using FbkiBot.Commands;
-using FbkiBot.Configuration;
+using FbkiBot.Resources;
 using FbkiBot.Data;
 using FbkiBot.Models;
 using Microsoft.EntityFrameworkCore;
@@ -18,20 +18,20 @@ public class SaveCommandTest
         return new BotDbContext(new DbContextOptionsBuilder<BotDbContext>().UseInMemoryDatabase("test-db").Options);
     }
 
-    private (BotDbContext db, ILogger<SaveCommand> logger, IOptions<TextConstSettings> textConsts, CommandContext context, ITelegramBotClient botClient) BuildEnvironment(string command, string[] args)
+    private (BotDbContext db, ILogger<SaveCommand> logger, CommandContext context, ITelegramBotClient botClient) BuildEnvironment(string command, string[] args)
     {
         string[] tokens = [command, .. args];
         var msg = new Message() { Text = string.Join(' ', tokens), ReplyToMessage = new Message() { MessageId = 0 }, From = new() { Id = 1, FirstName = "A", LastName = "B", Username = "C" }, Chat = new() { Id = 2 } };
         var ctx = new CommandContext(msg, command, args);
 
-        return (MakeInMemoryDb(), Substitute.For<ILogger<SaveCommand>>(), Options.Create(Substitute.For<TextConstSettings>()), ctx, Substitute.For<ITelegramBotClient>());
+        return (MakeInMemoryDb(), Substitute.For<ILogger<SaveCommand>>(), ctx, Substitute.For<ITelegramBotClient>());
     }
 
     [Fact]
     public void TriggersOnCorrectCommand()
     {
         var env = BuildEnvironment("/save", ["test"]);
-        var command = new SaveCommand(env.db, env.logger, env.textConsts);
+        var command = new SaveCommand(env.db, env.logger);
 
         Assert.True(command.CanExecute(env.context));
     }
@@ -40,7 +40,7 @@ public class SaveCommandTest
     public void DoesntTriggerOnWrongCommand()
     {
         var env = BuildEnvironment("/wrong", ["test"]);
-        var command = new SaveCommand(env.db, env.logger, env.textConsts);
+        var command = new SaveCommand(env.db, env.logger);
 
         Assert.False(command.CanExecute(env.context));
     }
@@ -49,7 +49,7 @@ public class SaveCommandTest
     public async Task HandlesEmptyArgs()
     {
         var env = BuildEnvironment("/wrong", []);
-        var command = new SaveCommand(env.db, env.logger, env.textConsts);
+        var command = new SaveCommand(env.db, env.logger);
 
         await command.ExecuteAsync(env.botClient, env.context, CancellationToken.None);
 
@@ -60,7 +60,7 @@ public class SaveCommandTest
     public async Task HandlesNoReply()
     {
         var env = BuildEnvironment("/save", ["test"]);
-        var command = new SaveCommand(env.db, env.logger, env.textConsts);
+        var command = new SaveCommand(env.db, env.logger);
         env.context.Message.ReplyToMessage = null;
 
         await command.ExecuteAsync(env.botClient, env.context, CancellationToken.None);
@@ -72,7 +72,7 @@ public class SaveCommandTest
     public async Task HandlesExistingNames()
     {
         var env = BuildEnvironment("/save", ["test"]);
-        var command = new SaveCommand(env.db, env.logger, env.textConsts);
+        var command = new SaveCommand(env.db, env.logger);
         await env.db.SavedMessages.AddAsync(new SavedMessage("test", 69, 1337, new()));
         await env.db.SaveChangesAsync();
 
@@ -86,7 +86,7 @@ public class SaveCommandTest
     public async Task SavesMessageAsync()
     {
         var env = BuildEnvironment("/save", ["test"]);
-        var command = new SaveCommand(env.db, env.logger, env.textConsts);
+        var command = new SaveCommand(env.db, env.logger);
 
         await command.ExecuteAsync(env.botClient, env.context, CancellationToken.None);
 
