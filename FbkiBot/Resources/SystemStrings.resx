@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <root>
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
+                id="root"
                 xmlns="">
         <xsd:element name="root" msdata:IsDataSet="true">
 
@@ -25,5 +26,8 @@
     </resheader>
     <data name="ErrorHandling.UnexpectedError" xml:space="preserve">
         <value>&lt;b&gt;Непредвиденная ошибка во время обработки запроса:&lt;/b&gt;\n\n</value>
+    </data>
+    <data name="CannotSendPrivateMessage" xml:space="preserve">
+        <value>Не получилось отправить сообщение в ЛС. Напишите /start в ЛС боту</value>
     </data>
 </root>

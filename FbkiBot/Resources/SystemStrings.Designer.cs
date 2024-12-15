@@ -60,6 +60,15 @@ namespace FbkiBot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не получилось отправить сообщение в ЛС. Напишите /start в ЛС боту.
+        /// </summary>
+        internal static string CannotSendPrivateMessage {
+            get {
+                return ResourceManager.GetString("CannotSendPrivateMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;b&gt;Непредвиденная ошибка во время обработки запроса:&lt;/b&gt;\n\n.
         /// </summary>
         internal static string ErrorHandling_UnexpectedError {

@@ -2,6 +2,7 @@ using FbkiBot.Attributes;
 using FbkiBot.Data;
 using FbkiBot.Models;
 using FbkiBot.Resources;
+using FbkiBot.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
@@ -25,16 +26,19 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger) : ICh
         // Если задано название монтирования - ищем по нему и ID пользователя
         if (context.Argument?.Length > 0)
             mount = await db.UserMounts.FirstOrDefaultAsync(mnt =>
-                mnt.UserId == context.Message.From!.Id && string.Equals(mnt.Name, context.Argument, StringComparison.OrdinalIgnoreCase), cancellationToken);
-        else  // Если не задано - ищем по ID пользователя и ID текущего чата
+                mnt.UserId == context.Message.From!.Id &&
+                string.Equals(mnt.Name, context.Argument, StringComparison.OrdinalIgnoreCase), cancellationToken);
+        else // Если не задано - ищем по ID пользователя и ID текущего чата
             mount = await db.UserMounts.FirstOrDefaultAsync(mnt =>
                 mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id, cancellationToken);
 
         // Если такое монтирование не найдено - сообщаем об этом пользователю 
         if (mount is null)
         {
-            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Umount_NotFound,
-                cancellationToken: cancellationToken);
+            await botClient.TrySendMessageOrNotify(context.Message.From!, CommandStrings.Umount_NotFound,
+                context.Message.Chat,
+                cancellationToken);
+            await botClient.DeleteMessage(context.Message.Chat, context.Message.Id, cancellationToken);
             return;
         }
 
@@ -43,7 +47,9 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger) : ICh
         await db.SaveChangesAsync(cancellationToken);
 
         logger.LogDebug("/umount - success");
-        await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Umount_Success,
-            cancellationToken: cancellationToken);
+        await botClient.TrySendMessageOrNotify(context.Message.From!, CommandStrings.Umount_Success,
+            context.Message.Chat,
+            cancellationToken);
+        await botClient.DeleteMessage(context.Message.Chat, context.Message.Id, cancellationToken);
     }
 }

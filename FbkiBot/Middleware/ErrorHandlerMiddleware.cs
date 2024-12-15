@@ -40,7 +40,9 @@ public class ErrorHandlerMiddleware : IBotMiddleware
 
             // Отправить сообщение об ошибке пользователю, отправившему сообщение, повлекшее появление ошибки
             await context.Client.SendMessage(context.Update.Message.Chat.Id, sb.ToString(),
-                cancellationToken: context.CancellationToken, replyParameters: new ReplyParameters() { ChatId = context.Update.Message.Chat.Id, MessageId = context.Update.Message.MessageId },
+                cancellationToken: context.CancellationToken,
+                replyParameters: new ReplyParameters()
+                    { ChatId = context.Update.Message.Chat.Id, MessageId = context.Update.Message.MessageId },
                 parseMode: ParseMode.Html);
         }
     }

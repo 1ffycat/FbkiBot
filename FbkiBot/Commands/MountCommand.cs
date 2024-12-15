@@ -2,9 +2,12 @@
 using FbkiBot.Data;
 using FbkiBot.Models;
 using FbkiBot.Resources;
+using FbkiBot.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace FbkiBot.Commands;
 
@@ -21,12 +24,23 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger) : IChat
     {
         logger.LogDebug("Processing mount command");
 
+        // Если не группа
+        if (context.Message.Chat.Type != ChatType.Group && context.Message.Chat.Type != ChatType.Supergroup)
+        {
+            logger.LogDebug("/mount denied - not a group chat");
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Mount_NotAGroup,
+                cancellationToken: cancellationToken);
+            return;
+        }
+
         // Если не задано название монтирования
         if (context.Argument is null)
         {
             logger.LogDebug("/mount denied - no context.Argument");
-            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Mount_NoName,
-                cancellationToken: cancellationToken);
+            await botClient.TrySendMessageOrNotify(context.Message.From!, CommandStrings.Mount_NoName,
+                context.Message.Chat,
+                cancellationToken);
+            await botClient.DeleteMessage(context.Message.Chat.Id, context.Message.Id, cancellationToken);
             return;
         }
 
@@ -34,16 +48,20 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger) : IChat
         if (db.UserMounts.Any(mnt =>
                 EF.Functions.Like(mnt.Name, context.Argument) && context.Message.From!.Id == mnt.UserId))
         {
-            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Mount_NameTaken,
-                cancellationToken: cancellationToken);
+            await botClient.TrySendMessageOrNotify(context.Message.From!, CommandStrings.Mount_NameTaken,
+                context.Message.Chat,
+                cancellationToken);
+            await botClient.DeleteMessage(context.Message.Chat.Id, context.Message.Id, cancellationToken);
             return;
         }
 
         // Если монтирование для этого чата уже существует
         if (db.UserMounts.Any(mnt => mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id))
         {
-            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Mount_AlreadyExists,
-                cancellationToken: cancellationToken);
+            await botClient.TrySendMessageOrNotify(context.Message.From!, CommandStrings.Mount_AlreadyExists,
+                context.Message.Chat,
+                cancellationToken);
+            await botClient.DeleteMessage(context.Message.Chat.Id, context.Message.Id, cancellationToken);
             return;
         }
 
@@ -55,7 +73,9 @@ public class MountCommand(BotDbContext db, ILogger<MountCommand> logger) : IChat
         await db.SaveChangesAsync(cancellationToken);
 
         logger.LogDebug("/mount - success");
-        await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Mount_Success,
-            cancellationToken: cancellationToken);
+        await botClient.TrySendMessageOrNotify(context.Message.From!, CommandStrings.Mount_Success,
+            context.Message.Chat,
+            cancellationToken);
+        await botClient.DeleteMessage(context.Message.Chat.Id, context.Message.Id, cancellationToken);
     }
 }

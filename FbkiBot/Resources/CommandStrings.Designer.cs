@@ -123,6 +123,15 @@ namespace FbkiBot.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Монтирования можно создавать только к группам.
+        /// </summary>
+        internal static string Mount_NotAGroup {
+            get {
+                return ResourceManager.GetString("Mount.NotAGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Монтирование успешно произведено.
         /// </summary>
         internal static string Mount_Success {

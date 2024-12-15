@@ -98,6 +98,6 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db) : IChatComman
         logger.LogDebug("/ls - success {}", msgBuilder.ToString());
 
         await botClient.SendMessage(context.Message.Chat.Id, $"{CommandStrings.Ls_Success}\n{msgBuilder}",
-            parseMode: ParseMode.Html, cancellationToken: cancellationToken);
+            ParseMode.Html, cancellationToken: cancellationToken);
     }
 }

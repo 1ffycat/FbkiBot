@@ -49,7 +49,9 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
         {
             logger.LogDebug("/rm denied - not an author");
             await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Rm_NotAuthor,
-                replyParameters: new ReplyParameters() { ChatId = messageFound.ChatId, MessageId = messageFound.MessageId }, cancellationToken: cancellationToken);
+                replyParameters: new ReplyParameters()
+                    { ChatId = messageFound.ChatId, MessageId = messageFound.MessageId },
+                cancellationToken: cancellationToken);
             return;
         }
 

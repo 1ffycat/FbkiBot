@@ -44,7 +44,9 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger) : IChatCo
             { } existingMessage)
         {
             await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Save_NameTaken,
-                replyParameters: new ReplyParameters() { ChatId = existingMessage.ChatId, MessageId = existingMessage.MessageId }, cancellationToken: cancellationToken);
+                replyParameters: new ReplyParameters()
+                    { ChatId = existingMessage.ChatId, MessageId = existingMessage.MessageId },
+                cancellationToken: cancellationToken);
             return;
         }
 
