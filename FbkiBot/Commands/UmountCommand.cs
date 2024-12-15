@@ -2,6 +2,7 @@ using FbkiBot.Attributes;
 using FbkiBot.Data;
 using FbkiBot.Models;
 using FbkiBot.Resources;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
 
@@ -20,9 +21,14 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger) : ICh
     {
         logger.LogDebug("Processing umount command");
 
-        // Ищем монтирование чата по пользователю, который написал команду и Id чата в котором была написана команда
-        var mount = db.UserMounts.FirstOrDefault(mnt =>
-            mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id);
+        UserMount? mount;
+        // Если задано название монтирования - ищем по нему и ID пользователя
+        if (context.Argument?.Length > 0)
+            mount = await db.UserMounts.FirstOrDefaultAsync(mnt =>
+                mnt.UserId == context.Message.From!.Id && string.Equals(mnt.Name, context.Argument, StringComparison.OrdinalIgnoreCase), cancellationToken);
+        else  // Если не задано - ищем по ID пользователя и ID текущего чата
+            mount = await db.UserMounts.FirstOrDefaultAsync(mnt =>
+                mnt.UserId == context.Message.From!.Id && mnt.ChatId == context.Message.Chat.Id, cancellationToken);
 
         // Если такое монтирование не найдено - сообщаем об этом пользователю 
         if (mount is null)

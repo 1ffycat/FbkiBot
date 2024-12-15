@@ -75,7 +75,7 @@
         <value>Бот для сохранения сообщений группы 14221 </value>
     </data>
     <data name="Umount.NotFound" xml:space="preserve">
-        <value>Монтирования с этим чатом нет</value>
+        <value>Монтирование не найдено</value>
     </data>
     <data name="Umount.Success" xml:space="preserve">
         <value>Монтирование удалено</value>

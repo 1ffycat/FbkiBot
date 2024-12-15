@@ -222,7 +222,7 @@ namespace FbkiBot.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Монтирования с этим чатом нет.
+        ///   Looks up a localized string similar to Монтирование не найдено.
         /// </summary>
         internal static string Umount_NotFound {
             get {
