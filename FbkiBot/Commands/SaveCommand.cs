@@ -4,6 +4,7 @@ using FbkiBot.Models;
 using FbkiBot.Resources;
 using Microsoft.Extensions.Logging;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
@@ -24,7 +25,7 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger) : IChatCo
         if (context.Argument is null)
         {
             logger.LogDebug("/save denied - no save name");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -33,7 +34,7 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger) : IChatCo
         if (context.Message.ReplyToMessage is not { } replyMsg)
         {
             logger.LogDebug("/save denied - no reply message");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Save_NoReply,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Save_NoReply,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -42,8 +43,8 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger) : IChatCo
         if (await db.FindSavedMessageAsync(context.Argument, context.Message.Chat.Id, cancellationToken) is
             { } existingMessage)
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Save_NameTaken,
-                replyToMessageId: existingMessage.MessageId, cancellationToken: cancellationToken);
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Save_NameTaken,
+                replyParameters: new ReplyParameters() { ChatId = existingMessage.ChatId, MessageId = existingMessage.MessageId }, cancellationToken: cancellationToken);
             return;
         }
 
@@ -57,7 +58,7 @@ public class SaveCommand(BotDbContext db, ILogger<SaveCommand> logger) : IChatCo
 
         logger.LogDebug("/save - success");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Save_Success,
+        await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Save_Success,
             cancellationToken: cancellationToken);
     }
 }

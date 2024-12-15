@@ -66,7 +66,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db) : IChatComman
 
         if (foundMessages.Count == 0)
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Ls_Empty,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Ls_Empty,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -97,7 +97,7 @@ public class LsCommand(ILogger<LsCommand> logger, BotDbContext db) : IChatComman
 
         logger.LogDebug("/ls - success {}", msgBuilder.ToString());
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, $"{CommandStrings.Ls_Success}\n{msgBuilder}",
+        await botClient.SendMessage(context.Message.Chat.Id, $"{CommandStrings.Ls_Success}\n{msgBuilder}",
             parseMode: ParseMode.Html, cancellationToken: cancellationToken);
     }
 }

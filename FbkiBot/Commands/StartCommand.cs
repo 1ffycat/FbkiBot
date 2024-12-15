@@ -19,7 +19,7 @@ public class StartCommand(ILogger<StartCommand> logger) : IChatCommand
     {
         logger.LogDebug("Sending welcome message");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Start_Welcome,
+        await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Start_Welcome,
             cancellationToken: cancellationToken);
     }
 }

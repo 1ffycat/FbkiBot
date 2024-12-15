@@ -27,7 +27,7 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger) : ICh
         // Если такое монтирование не найдено - сообщаем об этом пользователю 
         if (mount is null)
         {
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Umount_NotFound,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Umount_NotFound,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -37,7 +37,7 @@ public class UmountCommand(BotDbContext db, ILogger<UmountCommand> logger) : ICh
         await db.SaveChangesAsync(cancellationToken);
 
         logger.LogDebug("/umount - success");
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Umount_Success,
+        await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Umount_Success,
             cancellationToken: cancellationToken);
     }
 }

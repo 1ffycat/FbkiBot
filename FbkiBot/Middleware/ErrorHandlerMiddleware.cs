@@ -4,6 +4,7 @@ using FbkiBot.Resources;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
 namespace FbkiBot.Middleware;
@@ -38,8 +39,8 @@ public class ErrorHandlerMiddleware : IBotMiddleware
             );
 
             // Отправить сообщение об ошибке пользователю, отправившему сообщение, повлекшее появление ошибки
-            await context.Client.SendTextMessageAsync(context.Update.Message.Chat.Id, sb.ToString(),
-                cancellationToken: context.CancellationToken, replyToMessageId: context.Update.Message.MessageId,
+            await context.Client.SendMessage(context.Update.Message.Chat.Id, sb.ToString(),
+                cancellationToken: context.CancellationToken, replyParameters: new ReplyParameters() { ChatId = context.Update.Message.Chat.Id, MessageId = context.Update.Message.MessageId },
                 parseMode: ParseMode.Html);
         }
     }

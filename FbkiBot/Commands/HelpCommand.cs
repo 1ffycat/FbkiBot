@@ -36,7 +36,7 @@ public class HelpCommand(ILogger<HelpCommand> logger, Func<IEnumerable<IChatComm
         }
 
         // Отправляем юзеру собранное сообщение
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, helpBuilder.ToString(),
+        await botClient.SendMessage(context.Message.Chat.Id, helpBuilder.ToString(),
             cancellationToken: cancellationToken);
     }
 }

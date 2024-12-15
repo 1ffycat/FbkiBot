@@ -85,7 +85,7 @@ public class TelegramBotService(
 
         logger.LogDebug("Found {commandCount} commands", botCommands.Length);
 
-        await _botClient.SetMyCommandsAsync(botCommands, cancellationToken: cancellationToken);
+        await _botClient.SetMyCommands(botCommands, cancellationToken: cancellationToken);
 
         logger.LogInformation("Advertised {commandCount} available commands to Telegram", botCommands.Length);
     }

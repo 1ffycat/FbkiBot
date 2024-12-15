@@ -6,6 +6,7 @@ using FbkiBot.Resources;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace FbkiBot.Commands;
 
@@ -27,7 +28,7 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
         if (context.Argument is null)
         {
             logger.LogDebug("/rm denied - no name provided");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -38,7 +39,7 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
         if (messageFound is null)
         {
             logger.LogDebug("/rm denied - no message found with such name");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.SavedMessageNotFound,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.SavedMessageNotFound,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -47,8 +48,8 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
         if (saveSettings.Value.CanOnlyBeRemovedByAuthor && messageFound.AddedById != context.Message.From?.Id)
         {
             logger.LogDebug("/rm denied - not an author");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Rm_NotAuthor,
-                replyToMessageId: messageFound.MessageId, cancellationToken: cancellationToken);
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Rm_NotAuthor,
+                replyParameters: new ReplyParameters() { ChatId = messageFound.ChatId, MessageId = messageFound.MessageId }, cancellationToken: cancellationToken);
             return;
         }
 
@@ -58,7 +59,7 @@ public class RmCommand(IOptions<MessageSavingSettings> saveSettings, ILogger<RmC
 
         logger.LogDebug("Saved message removed");
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Rm_Success,
+        await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Rm_Success,
             cancellationToken: cancellationToken);
     }
 }

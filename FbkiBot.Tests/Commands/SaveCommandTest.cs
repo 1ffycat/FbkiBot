@@ -23,7 +23,7 @@ public class SaveCommandTest
         var msg = new Message
         {
             Text = string.Join(' ', tokens),
-            ReplyToMessage = new Message { MessageId = 0 },
+            ReplyToMessage = new Message { Id = 0 },
             From = new User { Id = 1, FirstName = "A", LastName = "B", Username = "C" },
             Chat = new Chat { Id = 2 }
         };

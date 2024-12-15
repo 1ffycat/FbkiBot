@@ -25,7 +25,7 @@ public class CatCommand(BotDbContext db, ILogger<CatCommand> logger) : IChatComm
         if (context.Argument is null)
         {
             logger.LogDebug("/cat denied - no name provided");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.NoSavedMessageNameProvided,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -50,14 +50,14 @@ public class CatCommand(BotDbContext db, ILogger<CatCommand> logger) : IChatComm
         if (messageFound is null)
         {
             logger.LogDebug("/cat denied - no message found by name");
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.SavedMessageNotFound,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.SavedMessageNotFound,
                 cancellationToken: cancellationToken);
             return;
         }
 
         logger.LogDebug("/cat - success");
 
-        await botClient.ForwardMessageAsync(context.Message.Chat.Id, messageFound.ChatId, messageFound.MessageId,
+        await botClient.ForwardMessage(context.Message.Chat.Id, messageFound.ChatId, messageFound.MessageId,
             cancellationToken: cancellationToken);
     }
 }

@@ -73,7 +73,7 @@ app.Use(async (context, next) =>
     }
 
     // Отправляем тот же стикер в чат
-    await context.Client.SendStickerAsync(context.Update.Message.Chat.Id, InputFile.FromFileId(sticker.FileId));
+    await context.Client.SendSticker(context.Update.Message.Chat.Id, InputFile.FromFileId(sticker.FileId));
 
     // Продолжаем выполнение
     await next(context);

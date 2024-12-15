@@ -33,7 +33,7 @@ public class MountsCommand(BotDbContext db, ILogger<MountsCommand> logger) : ICh
         {
             logger.LogDebug("Found no mounts for user");
 
-            await botClient.SendTextMessageAsync(context.Message.Chat.Id, CommandStrings.Mounts_Empty,
+            await botClient.SendMessage(context.Message.Chat.Id, CommandStrings.Mounts_Empty,
                 cancellationToken: cancellationToken);
             return;
         }
@@ -48,14 +48,14 @@ public class MountsCommand(BotDbContext db, ILogger<MountsCommand> logger) : ICh
         foreach (var mount in mounts)
         {
             // Получаем информацию о примонтированном чате
-            var chat = await botClient.GetChatAsync(mount.ChatId, cancellationToken);
+            var chat = await botClient.GetChat(mount.ChatId, cancellationToken);
 
             // Если не можем получить информацию о чате (например, бота удалили из него) - пишем ID чата
             sb.AppendLine(
                 $"- {HttpUtility.HtmlEncode(mount.Name)}: {HttpUtility.HtmlEncode(chat.Title ?? $"Chat ID: {mount.ChatId}")}"); // TODO: см. LsCommand.cs
         }
 
-        await botClient.SendTextMessageAsync(context.Message.Chat.Id, sb.ToString(),
+        await botClient.SendMessage(context.Message.Chat.Id, sb.ToString(),
             cancellationToken: cancellationToken, parseMode: ParseMode.Html);
 
         logger.LogDebug("/mount - success");
