@@ -158,7 +158,7 @@ public static class Formatter
         {
             ParseMode.MarkdownV2 => $"{markdownOpeningSymbol}{text}{markdownClosingSymbol}",
             ParseMode.Html => $"{htmlOpeningTag}{text}{htmlClosingTag}",
-            ParseMode.Markdown => throw new NotImplementedException(
+            ParseMode.Markdown => throw new NotSupportedException(
                 "Markdown formatting is obsolete, please use MarkdownV2."),
             _ => text
         };
